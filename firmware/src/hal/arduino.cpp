@@ -1,7 +1,8 @@
 #include "hal.h"
 
-// AVR-based boards
-#if defined(__AVR__)
+// Arduino-based boards
+
+#if defined(ARDUINO)
 
 uint32_t highMillis = 0;
 uint32_t prevMillis = 0;
@@ -17,7 +18,11 @@ uint64_t currMillis(void) {
   return ((uint64_t) highMillis << 32) | (uint64_t) now;
 }
 
-void display(char *str) {
+void initSerial(void) {
+  Serial.begin(115200);
+}
+
+void display(const char *str) {
   Serial.print(str);
 }
 
@@ -25,14 +30,4 @@ void displayUInt(uint32_t value) {
   Serial.print(value);
 }
 
-// Default, do nothing.
-#else
-const uint8_t LED_PINS[] = {};
-
-uint64_t currMillis(void) {
-  return 0;
-}
-
-void display(char *str) {}
-void displayUInt(uint32_t value) {}
 #endif

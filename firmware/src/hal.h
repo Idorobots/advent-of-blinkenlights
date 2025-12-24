@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(__AVR__)
+#if defined(ARDUINO)
   #include <Arduino.h>
 
 #else
@@ -9,5 +9,7 @@
 #endif
 
 uint64_t currMillis(void);
-void display(char *str);
+
+void initSerial(void);
+void display(const char *str);
 void displayUInt(uint32_t value);

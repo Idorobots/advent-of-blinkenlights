@@ -1,23 +1,23 @@
 #include "hal.h"
 
-#if defined(__AVR__)
+#if defined(ARDUINO_ARCH_AVR)
   const uint8_t LED_PINS[] = { 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 15, 16, 17, 18, 19 };
-#else
-  const uint8_t LED_PINS[] = {};
+#elif defined(ARDUINO_ARCH_STM32)
+const uint8_t LED_PINS[] = { PB11, PB12, PB13, PB14, PB15, PA8, PA9, PA10, /*PA11, PA12,*/ PA15, PB3, PB4, PB5, PB6, PB7, PB8, PB9 };
 #endif
 
 void ledBar(uint16_t value) {
   for (uint8_t i = 0; i < 16; i++) {
-    digitalWrite(LED_PINS[i], (value & (1 << i)) > 0);
+    digitalWrite(LED_PINS[i], (value & (1 << i)) == 0);
   }
 }
 
-#define STEP_INTERVAL 50 // 50 ms
-#define ANIM_INTERVAL (60 * 1000) // 1 minute
+const uint64_t STEP_INTERVAL = 50; // 50 ms
+const uint64_t ANIM_INTERVAL = 60000; // 1 minute
 
-uint8_t anim = 0;
-uint16_t value = 0;
-bool direction = false;
+static uint8_t anim = 0;
+static uint16_t value = 0;
+static bool direction = false;
 
 void nextAnim(void) {
   anim++;
@@ -112,11 +112,7 @@ void step(uint64_t now) {
 }
 
 void setup(void) {
-  Serial.begin(115200);
-
-  pinMode(LED_BUILTIN, OUTPUT);
-
-  digitalWrite(LED_BUILTIN, LOW);
+  initSerial();
 
   for (uint8_t i = 0; i < 16; i++) {
     pinMode(LED_PINS[i], OUTPUT);
@@ -125,20 +121,22 @@ void setup(void) {
   ledBar(0x0000);
 }
 
-uint64_t prevAnim = 0;
-uint64_t prevStep = 0;
+static uint64_t prevAnim = 0;
+static uint64_t prevStep = 0;
 
 void loop(void) {
   uint64_t now = currMillis();
 
-  if(now - prevStep > STEP_INTERVAL) {
+  uint64_t deltaStep = now - prevStep;
 
+  if (deltaStep > STEP_INTERVAL) {
     step(now);
-
     prevStep = now;
   }
 
-  if(now - prevAnim > ANIM_INTERVAL) {
+  uint64_t deltaAnim = now - prevAnim;
+
+  if (deltaAnim > ANIM_INTERVAL) {
     nextAnim();
 
     display("Current animation: ");
