@@ -3,7 +3,9 @@
 #if defined(ARDUINO_ARCH_AVR)
   const uint8_t LED_PINS[] = { 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 15, 16, 17, 18, 19 };
 #elif defined(ARDUINO_ARCH_STM32)
-const uint8_t LED_PINS[] = { PB11, PB12, PB13, PB14, PB15, PA8, PA9, PA10, /*PA11, PA12,*/ PA15, PB3, PB4, PB5, PB6, PB7, PB8, PB9 };
+  const uint8_t LED_PINS[] = { PB11, PB12, PB13, PB14, PB15, PA8, PA9, PA10, /*PA11, PA12,*/ PA15, PB3, PB4, PB5, PB6, PB7, PB8, PB9 };
+#elif defined(ARDUINO_ARCH_ESP32)
+const uint8_t LED_PINS[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 15, 18, 19, 20, 12 };
 #endif
 
 void ledBar(uint16_t value) {
