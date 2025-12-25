@@ -5,11 +5,12 @@
 #elif defined(ARDUINO_ARCH_STM32)
   const uint8_t LED_PINS[] = { PB11, PB12, PB13, PB14, PB15, PA8, PA9, PA10, /*PA11, PA12,*/ PA15, PB3, PB4, PB5, PB6, PB7, PB8, PB9 };
 #elif defined(ARDUINO_ARCH_ESP32)
-const uint8_t LED_PINS[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 15, 18, 19, 20, 12 };
+const uint8_t LED_PINS[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, /*15, */ 18, 19, 20, /*12, 13*/ 21, 23 };
 #endif
 
 void ledBar(uint16_t value) {
   for (uint8_t i = 0; i < 16; i++) {
+    // NOTE Pins are supposed to sink the current.
     digitalWrite(LED_PINS[i], (value & (1 << i)) == 0);
   }
 }
@@ -123,29 +124,28 @@ void setup(void) {
   ledBar(0x0000);
 }
 
-static uint64_t prevAnim = 0;
-static uint64_t prevStep = 0;
+static uint64_t nextAnimTs = 0;
+static uint64_t nextStepTs = 0;
 
 void loop(void) {
   uint64_t now = currMillis();
 
-  uint64_t deltaStep = now - prevStep;
-
-  if (deltaStep > STEP_INTERVAL) {
+  if (now > nextStepTs) {
     step(now);
-    prevStep = now;
+    nextStepTs = nextStepTs + STEP_INTERVAL;
   }
 
-  uint64_t deltaAnim = now - prevAnim;
-
-  if (deltaAnim > ANIM_INTERVAL) {
+  if (now > nextAnimTs) {
     nextAnim();
 
+    display("Current time: ");
+    displayUInt(now);
+    display("\r\n");
     display("Current animation: ");
     displayUInt(anim);
     display("\r\n");
 
-    prevAnim = now;
+    nextAnimTs = nextAnimTs + ANIM_INTERVAL;
   }
 
   delay(STEP_INTERVAL/5);
