@@ -5,11 +5,13 @@ CFLAGS=--std c23 -mz80 --no-std-crt0 -Isrc --opt-code-size --Werror -DZ80_ARCH_T
 LD=sdcc
 LDFLAGS=-mz80 --no-std-crt0 -Wl -y --code-size 8192 --code-loc 0x0090 --data-loc 0xb000 --stack-loc 0x8200
 OBJCOPY=sdobjcopy
+OBJCOPYFLAGS=-I ihex -O binary
+
 
 all: rom.bin
 
 rom.bin: rom.ihx
-	$(OBJCOPY) -I ihex -O binary $^ $@
+	$(OBJCOPY) $(OBJCOPYFLAGS) $^ $@
 
 rom.ihx: crt0.rel main.rel platform.rel interrupts.rel sio.rel pio.rel ctc.rel rtc.rel ports.rel
 	$(LD) $(LDFLAGS) -o $@ $^

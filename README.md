@@ -1,10 +1,16 @@
 # uC timeline
 
 ## Z80 - Temex CPU
-Requires SDCC & related binutils.
+Requires SDCC & related binutils. Tested under the following version:
 
 ```
-make clean && make
+SDCC : mcs51/z80/z180/r2k/r2ka/r3ka/sm83/tlcs90/ez80_z80/z80n/r800/ds390/pic16/pic14/TININative/ds400/hc08/s08/stm8/pdk13/pdk14/pdk15/mos6502/mos65c02/f8 4.5.0 #15242 (Linux)
+```
+
+To build the project:
+
+```
+make-f Makefile.z80
 truncate --size=8k rom.bin
 ```
 
@@ -41,6 +47,26 @@ cd gcc-m68hc11-elf-3.4.6
 ./configure --prefix=`pwd`/../build --target=m68hc11-elf
 make
 make install
+
+cd ..
+
+# GEL LibC
+# https://sourceforge.net/projects/gel/files/gel-hc1x/1.6.1/gel-hc1x-1.6.1.tar.gz/download
+tar zxvf gel-hc1x-1.6.1.tar.gz
+
+# Patch the sources (see below)!
+patch -s -p0 < gel.patch
+
+cd gel-hc1x-1.6.1
+
+make TARGET_BOARD=m68hc11-cme11
+
+cd ..
+mkdir -p build/lib
+mkdir -p build/include
+cp -r gel-hc1x-1.6.1/lib/* build/lib
+cp -r gel-hc1x-1.6.1/include/* build/include
+
 ```
 
 The GCC sources need a patch:
@@ -66,6 +92,20 @@ The GCC sources need a patch:
 - Patch `gcc/insn-output.c` adding  `extern int m68hc11_is_trap_symbol (rtx);` at the top.
 
 As a convenience, there is a patch file in the repo: `hc11/fix.patch`
+
+The GEL sources also need patching:
+- Changing the `m6811-elf-` binutils prefix to `m68hc11-elf-` where appropriate.
+- Removing any `.cc` files from the makefiles as C++ is not supported.
+
+As a convenience, there is a patch file in the repo: `hc11/gel.patch`
+
+Building the project is then a matter of:
+
+```
+make-f Makefile.hc11
+```
+
+The project can be uploaded to a CME11-type board via serial and `hc11/upload.py` script.
 
 ## Arduino-based
 These are built with PlatformIO.

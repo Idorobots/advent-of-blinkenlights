@@ -1,3 +1,6 @@
 .pio
 .clang_complete
 .ccls
+*.o
+*.elf
+*.s19

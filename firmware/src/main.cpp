@@ -7,7 +7,9 @@
 #elif defined(ARDUINO_ARCH_ESP32)
   const uint8_t LED_PINS[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, /*15, */ 18, 19, 20, /*12, 13*/ 21, 23 };
 #elif defined(Z80_ARCH_TEMEX)
-const uint8_t LED_PINS[] = {PB0, PB1, PB2, PB3, PB4, PB5, PB6, PB7, PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7 };
+  const uint8_t LED_PINS[] = {PB0, PB1, PB2, PB3, PB4, PB5, PB6, PB7, PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7 };
+#elif defined(HC11_ARCH_CME11)
+  const uint8_t LED_PINS[] = {PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7, PE7, PE6, PE5, PE4, PE3, PE2, PE1, PE0 };
 #endif
 
 void ledBar(uint16_t value) {
@@ -31,14 +33,14 @@ void nextAnim(void) {
 }
 
 const uint16_t animDouble[] = {
-  0b0000000110000000,
-  0b0000001001000000,
-  0b0000010000100000,
-  0b0000100000010000,
-  0b0001000000001000,
-  0b0010000000000100,
-  0b0100000000000010,
-  0b1000000000000001
+  0x0180, // 0b0000000110000000,
+  0x0240, // 0b0000001001000000,
+  0x0420, // 0b0000010000100000,
+  0x0810, // 0b0000100000010000,
+  0x1008, // 0b0001000000001000,
+  0x2004, // 0b0010000000000100,
+  0x4002, // 0b0100000000000010,
+  0x8001  // 0b1000000000000001
 };
 
 void step(uint64_t now) {
@@ -126,11 +128,13 @@ void setup(void) {
   ledBar(0x0000);
 
   delayMillis(STEP_INTERVAL);
+
   ledBar(0xffff);
 }
 
 static uint64_t nextAnimTs = 0;
 static uint64_t nextStepTs = 0;
+static uint64_t nextLogTs = 0;
 
 void loop(void) {
   uint64_t now = currMillis();
@@ -142,7 +146,10 @@ void loop(void) {
 
   if (now > nextAnimTs) {
     nextAnim();
+    nextAnimTs = nextAnimTs + ANIM_INTERVAL;
+  }
 
+  if (now > nextLogTs) {
     display("Current time: ");
     displayUInt(now);
     display("\r\n");
@@ -150,7 +157,7 @@ void loop(void) {
     displayUInt(anim);
     display("\r\n");
 
-    nextAnimTs = nextAnimTs + ANIM_INTERVAL;
+    nextLogTs = nextLogTs + 1000;
   }
 
   delayMillis(STEP_INTERVAL/5);
