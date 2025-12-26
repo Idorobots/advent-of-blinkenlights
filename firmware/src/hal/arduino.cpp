@@ -18,6 +18,10 @@ uint64_t currMillis(void) {
   return ((uint64_t) highMillis << 32) | (uint64_t) now;
 }
 
+void delayMillis(uint64_t ms) {
+  delay(ms);
+}
+
 void initSerial(void) {
   Serial.begin(115200);
 }

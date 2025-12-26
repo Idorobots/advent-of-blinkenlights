@@ -5,7 +5,9 @@
 #elif defined(ARDUINO_ARCH_STM32)
   const uint8_t LED_PINS[] = { PB11, PB12, PB13, PB14, PB15, PA8, PA9, PA10, /*PA11, PA12,*/ PA15, PB3, PB4, PB5, PB6, PB7, PB8, PB9 };
 #elif defined(ARDUINO_ARCH_ESP32)
-const uint8_t LED_PINS[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, /*15, */ 18, 19, 20, /*12, 13*/ 21, 23 };
+  const uint8_t LED_PINS[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, /*15, */ 18, 19, 20, /*12, 13*/ 21, 23 };
+#elif defined(Z80_ARCH_TEMEX)
+const uint8_t LED_PINS[] = {PB0, PB1, PB2, PB3, PB4, PB5, PB6, PB7, PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7 };
 #endif
 
 void ledBar(uint16_t value) {
@@ -122,6 +124,9 @@ void setup(void) {
   }
 
   ledBar(0x0000);
+
+  delayMillis(STEP_INTERVAL);
+  ledBar(0xffff);
 }
 
 static uint64_t nextAnimTs = 0;
@@ -148,5 +153,5 @@ void loop(void) {
     nextAnimTs = nextAnimTs + ANIM_INTERVAL;
   }
 
-  delay(STEP_INTERVAL/5);
+  delayMillis(STEP_INTERVAL/5);
 }
