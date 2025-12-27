@@ -107,6 +107,12 @@ make-f Makefile.hc11
 
 The project can be uploaded to a CME11-type board via serial and `hc11/upload.py` script.
 
+Alternatively, you can update the memory map to point the `text` section to U6 EPROM and burn it into a ROM chip. You will need to update the reset vector in Buffalo EPROM U7 to point to `0x8000` for the program to start automatically.
+
+If you want to retain the interactive debugging bootloader, a modified Buffalo monitor is provided in `hc11/buf341.asm`. In can be compiled with `asm11` and burned to the U7 ROM chip. It's not exctly the same as the version on the board, but the functionality is complete. The modification causes Buffalo to jump to `0x8000` when pin 0 of `PORTE` is high at boot.
+
+A modified version of the original Axiom Buffalo 3.4AX ROM is available in `hc11/buf34ax.bin` and a modified version that allows running ROM code in `hc11/buf341ax.bin`. This was modified by hand using the `hc11/bufpatch.asm`
+
 ## Arduino-based
 These are built with PlatformIO.
 

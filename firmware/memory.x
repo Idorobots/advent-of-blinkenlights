@@ -5,9 +5,13 @@
 MEMORY
 {
   page0 (rwx) : ORIGIN = 0x0, LENGTH = 256
-  text  (rx)  : ORIGIN = 0x2000, LENGTH = 0x6000
+  text  (rx)  : ORIGIN = 0x8000, LENGTH = 0x2000
+  /* change origin to 0x8000 and length to 0x6000 for RAM operation */
+  /* text  (rx)  : ORIGIN = 0x2000, LENGTH = 0x6000 */
   data        : ORIGIN = 0x1040, LENGTH = 0x1000-0x040
   eeprom (rx) : ORIGIN = 0xB600, LENGTH = 512
 }
 /* Setup the stack on the top of the data memory bank.  */
-PROVIDE (_stack = 0x2000 - 1);
+PROVIDE (_stack = 0x8000 - 1);
+/* change the value to 0x2000 for RAM  operation */
+/* PROVIDE (_stack = 0x2000 - 1); */
