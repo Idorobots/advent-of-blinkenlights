@@ -65,12 +65,40 @@ int main(void) {
   return 0;
 }
 
+// NOTE Only supporting PA, PD & PX (custom) for output and PE for input.
+volatile uint8_t PA_VALUE = 0x00;
+volatile uint8_t PD_VALUE = 0x00;
+volatile uint8_t PX_VALUE = 0x00;
+
 void pinMode(uint8_t pin, uint8_t mode) {
-  // TOOD
+  uint8_t off = pin & 0xf;
+  uint8_t mask = 1 << off;
+
+  if (pin == PA7) {
+    uint8_t curr = _io_ports[M6811_PACTL];
+    _io_ports[M6811_PACTL] = (mode == OUTPUT) ? (curr | mask) : (curr & ~mask);
+  }  else if (pin >= PD2 && pin <= PD5) {
+    uint8_t curr = _io_ports[M6811_DDRD];
+    _io_ports[M6811_DDRD] = (mode == OUTPUT) ? (curr | mask) : (curr & ~mask);
+  }
 }
 
 void digitalWrite(uint8_t pin, uint8_t value) {
-  // TOOD
+  uint8_t off = pin & 0xf;
+  uint8_t mask = 1 << off;
+
+  if (/*pin >= PA0 &&*/ pin <= PA7) {
+    PA_VALUE = (value == LOW) ? (PA_VALUE & ~mask) : (PA_VALUE | mask);
+    _io_ports[M6811_PORTA] = PA_VALUE;
+  } else if (pin >= PD2 && pin <= PD5) {
+    PD_VALUE = (value == LOW) ? (PD_VALUE & ~mask) : (PD_VALUE | mask);
+    _io_ports[M6811_PORTD] = PD_VALUE;
+  } else if (pin >= PX0 && pin <= PX7) {
+    PX_VALUE = (value == LOW) ? (PX_VALUE & ~mask) : (PX_VALUE | mask);
+
+    // NOTE This one is handled differently.
+    *PORTX = PX_VALUE;
+  }
 }
 
 #endif
