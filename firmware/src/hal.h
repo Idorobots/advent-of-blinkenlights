@@ -14,7 +14,7 @@
   void pinMode(uint8_t pin, uint8_t mode);
 
   #define HIGH 1
-  #define LOW 1
+  #define LOW 0
 
   void digitalWrite(uint8_t pin, uint8_t value);
   uint8_t digitalRead(uint8_t pin);
