@@ -1,4 +1,4 @@
-/* Memory banks for Axiom Manufacturing CME11E9-EVBU
+/* Memory banks for Axiom Manufacturing CME11A
    (http://www.axman.com)
 
   */
@@ -11,7 +11,3 @@ MEMORY
 }
 /* Setup the stack on the top of the data memory bank.  */
 PROVIDE (_stack = 0x2000 - 1);
-
-/* Setup the LCD access variables.  */
-PROVIDE (_gdm_lcd_cmd = 0xB5F0);
-PROVIDE (_gdm_lcd_data = 0xB5F1);
