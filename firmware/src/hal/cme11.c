@@ -15,10 +15,21 @@ void display(const char *str) {
 }
 
 void displayUInt(uint32_t value) {
+  // NOTE Effectively display(ultoa(value))
+
   char buf[20];
-  buf[19] = 0;
-  char* s = ultoa(value, buf+19, 10, 0);
-  display(s);
+  char* p;
+
+  p = &buf[20];
+  *--p = 0;
+
+  do {
+    unsigned char c = value % 10;
+    value = value / 10;
+    *--p = c + '0';
+  } while (value != 0);
+
+  display(p);
 }
 
 static uint64_t __currTicks = 0;
@@ -35,34 +46,15 @@ uint64_t currMillis(void) {
   uint64_t v = __currTicks;
   unlock();
 
-  uint64_t millis = 0;
-  millis = v * (TIMER_DIV / 2);
-  millis = millis + (v * (TIMER_DIV % 2)) / 2;
-  millis = millis / 1000;
-
-  return millis;
+  // NOTE This is basically 4 and this inflates the code size with unwanted divisions.
+  // uint32_t msPerTick = 1000L / (M6811_CPU_E_CLOCK / TIMER_DIV);
+  // return v * msPerTick;
+  return v * 4;
 }
 
 void delayMillis(uint64_t ms) {
   uint64_t t = currMillis() + ms;
   while (currMillis() < t) {}
-}
-
-int main(void) {
-  serial_init ();
-
-  lock();
-  set_interrupt_handler(RTI_VECTOR, timer_interrupt);
-  timer_initialize_rate(M6811_TPR_16);
-  unlock();
-
-  setup();
-
-  for(;;) {
-    loop();
-  }
-
-  return 0;
 }
 
 // NOTE Only supporting PA, PD & PX (custom) for output and PE for input.
@@ -99,6 +91,23 @@ void digitalWrite(uint8_t pin, uint8_t value) {
     // NOTE This one is handled differently.
     *PORTX = PX_VALUE;
   }
+}
+
+int main(void) {
+  initSerial();
+
+  lock();
+  set_interrupt_handler(RTI_VECTOR, timer_interrupt);
+  timer_initialize_rate(M6811_TPR_16);
+  unlock();
+
+  setup();
+
+  for(;;) {
+    loop();
+  }
+
+  return 0;
 }
 
 #endif

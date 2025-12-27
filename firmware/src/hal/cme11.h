@@ -4,9 +4,7 @@
 #include <sys/ports.h>
 #include <sys/time.h>
 #include <sys/locks.h>
-#include <sys/param.h>
 #include <sys/interrupts.h>
-#include <util.h>
 
 #define PA0 0x00
 #define PA1 0x01
