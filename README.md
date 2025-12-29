@@ -1,5 +1,9 @@
 # Advent of Blinkenlights
 
+This repository contains a sort-of an Advent of Code, but it's blinkenlights on various microcontroller boards.
+The goal was simple - create a nontrivial project that runs on multiple different platform dating as far back as the 1970'ties. Natuarally, the project couldn't be too complex, as some of these platforms are fairly limited in terms of memory, so a 16-LED strip "blinkenlights" was chosen.
+Each board expects to sink current for 16 LEDs connected to the pins listed in `main.cpp`. There are several time-based animations available that switch each minute. The boards are also logging some stuff on their respective main serial consoles.
+
 ## Temex CPU card
 Core: Z80, 8 bit
 Clock: 2.4576 MHz
