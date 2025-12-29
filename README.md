@@ -1,6 +1,15 @@
-# uC timeline
+# Advent of Blinkenlights
 
-## Z80 - Temex CPU
+## Temex CPU card
+Core: Z80, 8 bit
+Clock: 2.4576 MHz
+SRAM: 8k
+EEPROM: 8k
+GPIO: 16 I/O via Z80 PIO, 16 input only via memory mapped registers.
+Peripherals: 2 * UART (Z80 SIO), RTC (ICM7170IPG), 4 Timers (Z80 CTC), WDT (MAX691CPE).
+Other: SRAM & RTC battery backup (MAX691CPE), second EEPROM slot (max 8k).
+
+### Build
 Requires SDCC & related binutils. Tested under the following version:
 
 ```
@@ -16,7 +25,16 @@ truncate --size=8k rom.bin
 
 Flash the ROM chip in EEPROM1 position.
 
-## MC68HC11 - Axiom CMEA11A
+## Axiom CME11A
+Core: MC68HC11A1FN, M68HC11, 8 bit
+Clock: 8 MHz
+SRAM: 8k (external), 512 internal
+EEPROM: 16k (external), 512 internal
+GPIO: 11 I/O (Port D, Port A), 11 input only (Port A, Port E)
+Peripherals: UART (with RS232 port), SCI, SPI, 8-channel 8-bit ADC, 5 timers (16-bit, varying functions), WDT
+Other: Ports B and C are used for memory bus expansion, board supports up to 32k chips (any mix of EEPROM and SRAM), on-board bootloader and debugger (Bufalo 3.4, occupies 8k of EEPROM), LCD connector, SS keypad connector, expandable memory-mapped peripherals.
+
+### Build
 Requires an m68hc11 toolchain:
 
 ```
@@ -113,23 +131,49 @@ If you want to retain the interactive debugging bootloader, a modified Buffalo m
 
 A modified version of the original Axiom Buffalo 3.4AX ROM is available in `hc11/buf34ax.bin` and a modified version that allows running ROM code in `hc11/buf341ax.bin`. This was modified by hand using the `hc11/bufpatch.asm`
 
-## Arduino-based
-These are built with PlatformIO.
+## Arduino Uno
+Core: ATmega328p, AVR, 8bit
+Clock: 16 MHz
+SRAM: 2k
+EEPROM: 1k
+FLASH: 32k
+GPIO: 23
+Peripherals: 2 * SPI, I2C, UART, 8-channel 10-bit ADC, 3 timers (2 8-bit and one 16-bit), WDT
+Other: On-board serial programmer/debugger based around another ATmega chip.
 
-### Atmego328p - Arduino Uno
-
+### Build
 ```
 pio init
 pio run -e atmega -t upload
 ```
 
-### STM32F103 - Bluepill
+## STM32 Bluepill
+Core: STM32F103C8T6, ARM Cortex-M3, 32 bit
+Clock: 72 MHz
+SRAM: 20K
+FLASH: 64K
+GPIO: 32 I/O (some only 3V3-capable, PA13, PA14 and PA15 with reduced electrical capability)
+Peripherals: 2 * SPI, 2 * I2C, 2 * 10-channel 12-bit ADC, 3 * UART, CAN, USB 2.0, 4 timers, RTC
+Other: External batery connection for RTC bacup, JTAG debugger support
+
+### Build
 ```
 pio init
 pio run -e stm32 -t upload
 ```
 
-### ESP32-C6 - ESP32 C6 super mini
+## ESP32 C6 super mini
+Cores: ESP32-C6, High Performance Risc-V and Low Power Risc-V, 32 bit
+Clock: 160 MHz for HP, 20 MHz for LP
+SRAM: 512K for HP, 16k for LP
+FLASH: 320K (internal, expandable externally)
+GPIO: 22 (some not available on a convenient header)
+Peripherals: 2.4 GHz Wi-Fi 6 (802.11ax), Bluetooth 5 (LE), IEEE 802.15.4 (Zigbee), 3 * SPI (two for external flash), 3 * UART (one low-power), 2 * I2C (one low-power), I2S, RMT, 2 * TWAI, SDIO, Motor Control PWM, 7-channel 12-bit ADC, USB 2.0, WDT, 7 timers (various functions)
+Other: Built-in core temperature sensor, built-in AES, RSA and HMAC. JTAG debugger support
+
+### Build
+The caveat for this board is the fact that all the GPIOs used for USB programming are also used for the sketch making reprogramming harder (requires putting the board into the bootloader mode by resetting with the BOOT button depressed at just the right moment for the flash utility to find it).
+
 ```
 pio init
 pio run -e esp32c6 -t upload
