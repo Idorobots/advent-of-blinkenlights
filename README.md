@@ -8,12 +8,20 @@ Each board expects to sink current for 16 LEDs connected to the pins listed in `
 
 ## Temex CPU card
 Core: Z80, 8 bit
+
 Clock: 2.4576 MHz
+
 SRAM: 8k
+
 EEPROM: 8k
+
 GPIO: 16 I/O via Z80 PIO, 16 input only via memory mapped registers.
+
 Peripherals: 2 * UART (Z80 SIO), RTC (ICM7170IPG), 4 Timers (Z80 CTC), WDT (MAX691CPE).
+
 Other: SRAM & RTC battery backup (MAX691CPE), second EEPROM slot (max 8k).
+
+More on the card here: https://github.com/Idorobots/temex-reverse
 
 ### Build
 Requires SDCC & related binutils. Tested under the following version:
@@ -33,11 +41,17 @@ Flash the ROM chip in EEPROM1 position.
 
 ## Axiom CME11A
 Core: MC68HC11A1FN, M68HC11, 8 bit
+
 Clock: 8 MHz
+
 SRAM: 8k (external), 512 internal
+
 EEPROM: 16k (external), 512 internal
+
 GPIO: 11 I/O (Port D, Port A), 11 input only (Port A, Port E)
+
 Peripherals: UART (with RS232 port), SCI, SPI, 8-channel 8-bit ADC, 5 timers (16-bit, varying functions), WDT
+
 Other: Ports B and C are used for memory bus expansion, board supports up to 32k chips (any mix of EEPROM and SRAM), on-board bootloader and debugger (Bufalo 3.4, occupies 8k of EEPROM), LCD connector, SS keypad connector, expandable memory-mapped peripherals.
 
 ### Build
@@ -64,7 +78,7 @@ cd ..
 tar zxvf gcc-core-3.4.6.tar.gz
 
 # Patch the sources (see below)!
-patch -s -p0 < fix.patch
+patch -s -p0 < gcc.patch
 
 mv gcc-3.4.6 gcc-m68hc11-elf-3.4.6
 cd gcc-m68hc11-elf-3.4.6
@@ -115,7 +129,7 @@ The GCC sources need a patch:
 - Patch `gcc/insn-output.c` adding  `extern int m68hc11_is_far_symbol (rtx);` at the top.
 - Patch `gcc/insn-output.c` adding  `extern int m68hc11_is_trap_symbol (rtx);` at the top.
 
-As a convenience, there is a patch file in the repo: `hc11/fix.patch`
+As a convenience, there is a patch file in the repo: `hc11/gcc.patch`
 
 The GEL sources also need patching:
 - Changing the `m6811-elf-` binutils prefix to `m68hc11-elf-` where appropriate.
@@ -126,13 +140,13 @@ As a convenience, there is a patch file in the repo: `hc11/gel.patch`
 Building the project is then a matter of:
 
 ```
-make cme11a clean && make cme11a
+make cme11a-clean && make cme11a
 truncate --size=8k firmware/cme11a.bin
 ```
 
-The project can be uploaded to a CME11-type board via serial and `hc11/upload.py` script.
+The project can be uploaded to a CME11-type board via serial and `hc11/upload.py` script. You may need to upgrade the U5 RAM chip to 32k.
 
-Alternatively, you can update the memory map to point the `text` section to U6 EPROM and burn it into a ROM chip. You will need to update the reset vector in Buffalo EPROM U7 to point to `0x8000` for the program to start automatically.
+Alternatively, you can update the memory map to point the `text` section to U6 EPROM space and burn it into a ROM chip. You will need to update the reset vector in Buffalo EPROM U7 to point to `0x8000` for the program to start automatically.
 
 If you want to retain the interactive debugging bootloader, a modified Buffalo monitor is provided in `hc11/buf341.asm`. In can be compiled with `asm11` and burned to the U7 ROM chip. It's not exctly the same as the version on the board, but the functionality is complete. The modification causes Buffalo to jump to `0x8000` when pin 0 of `PORTE` is high at boot.
 
@@ -143,12 +157,19 @@ The code seems to be licensed under the MIT license terms (included in `hc11/LIC
 
 ## Arduino Uno
 Core: ATmega328p, AVR, 8bit
+
 Clock: 16 MHz
+
 SRAM: 2k
+
 EEPROM: 1k
+
 FLASH: 32k
+
 GPIO: 23
+
 Peripherals: 2 * SPI, I2C, UART, 8-channel 10-bit ADC, 3 timers (2 8-bit and one 16-bit), WDT
+
 Other: On-board serial programmer/debugger based around another ATmega chip.
 
 ### Build
@@ -158,11 +179,17 @@ make uno-clean && make uno-upload
 
 ## STM32 Bluepill
 Core: STM32F103C8T6, ARM Cortex-M3, 32 bit
+
 Clock: 72 MHz
+
 SRAM: 20K
+
 FLASH: 64K
+
 GPIO: 32 I/O (some only 3V3-capable, PA13, PA14 and PA15 with reduced electrical capability)
+
 Peripherals: 2 * SPI, 2 * I2C, 2 * 10-channel 12-bit ADC, 3 * UART, CAN, USB 2.0, 4 timers, RTC
+
 Other: External batery connection for RTC bacup, JTAG debugger support
 
 ### Build
@@ -172,11 +199,17 @@ make bluepill-clean && make bluepill-upload
 
 ## ESP32 C6 super mini
 Cores: ESP32-C6, High Performance Risc-V and Low Power Risc-V, 32 bit
+
 Clock: 160 MHz for HP, 20 MHz for LP
+
 SRAM: 512K for HP, 16k for LP
+
 FLASH: 320K (internal, expandable externally)
+
 GPIO: 22 (some not available on a convenient header)
+
 Peripherals: 2.4 GHz Wi-Fi 6 (802.11ax), Bluetooth 5 (LE), IEEE 802.15.4 (Zigbee), 3 * SPI (two for external flash), 3 * UART (one low-power), 2 * I2C (one low-power), I2S, RMT, 2 * TWAI, SDIO, Motor Control PWM, 7-channel 12-bit ADC, USB 2.0, WDT, 7 timers (various functions)
+
 Other: Built-in core temperature sensor, built-in AES, RSA and HMAC. JTAG debugger support
 
 ### Build

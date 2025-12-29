@@ -1,0 +1,37 @@
+diff -aur gel-hc1x-1.6.1/config/var.defs gel-hc1x-1.6.1-new/config/var.defs
+--- gel-hc1x-1.6.1/config/var.defs	2003-11-04 22:40:06.000000000 +0100
++++ gel-hc1x-1.6.1-new/config/var.defs	2025-12-26 21:11:00.773725323 +0100
+@@ -27,7 +27,7 @@
+ RM=rm -f
+ INSTALL=cp
+ 
+-DEVC_PREFIX=m6811-elf-
++DEVC_PREFIX=m68hc11-elf-
+ CC=$(DEVC_PREFIX)gcc
+ CXX=$(DEVC_PREFIX)gcc
+ #CC=$(DEVC_PREFIX)gcc
+diff -aur gel-hc1x-1.6.1/hello/Makefile gel-hc1x-1.6.1-new/hello/Makefile
+--- gel-hc1x-1.6.1/hello/Makefile	2003-04-01 22:08:37.000000000 +0200
++++ gel-hc1x-1.6.1-new/hello/Makefile	2025-12-26 21:13:40.895888582 +0100
+@@ -24,7 +24,7 @@
+ INSTALL=cp
+ 
+ # 68HC11 compiler and tools
+-DEVC_PREFIX=m6811-elf-
++DEVC_PREFIX=m68hc11-elf-
+ CC=$(DEVC_PREFIX)gcc
+ SIZE=$(DEVC_PREFIX)size
+ OBJCOPY=$(DEVC_PREFIX)objcopy
+diff -aur gel-hc1x-1.6.1/src/libutil/Makefile gel-hc1x-1.6.1-new/src/libutil/Makefile
+--- gel-hc1x-1.6.1/src/libutil/Makefile	2002-07-03 22:38:20.000000000 +0200
++++ gel-hc1x-1.6.1-new/src/libutil/Makefile	2025-12-26 21:14:07.539581723 +0100
+@@ -25,7 +25,8 @@
+ 
+ include $(GEL_BASEDIR)/config/make.defs
+ 
+-CCSRCS=persist.cc
++#CCSRCS=persist.cc
++CCSRCS=
+ CSRCS=gprint.c
+ 
+ OBJS=$(CCSRCS:.cc=.o) $(CSRCS:.c=.o)
