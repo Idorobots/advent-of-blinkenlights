@@ -7,16 +7,16 @@ OBJCOPY=m68hc11-elf-objcopy
 OBJCOPYFLAGS=--only-section=.text --only-section=.rodata --only-section=.vectors --only-section=.data
 
 
-all: rom.s19 rom.bin
+all: cme11a.s19 cme11a.bin
 
-rom.bin: rom.elf
+cme11a.bin: cme11a.elf
 	$(OBJCOPY) $(OBJCOPY_FLAGS) --output-target=binary $< $@
 
 
-rom.s19: rom.elf
+cme11a.s19: cme11a.elf
 	$(OBJCOPY) $(OBJCOPY_FLAGS) --output-target=srec $< $@
 
-rom.elf: main.o cme11.o
+cme11a.elf: main.o cme11.o
 	$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 main.o: src/main.cpp

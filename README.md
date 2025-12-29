@@ -19,8 +19,8 @@ SDCC : mcs51/z80/z180/r2k/r2ka/r3ka/sm83/tlcs90/ez80_z80/z80n/r800/ds390/pic16/p
 To build the project:
 
 ```
-make-f Makefile.z80
-truncate --size=8k rom.bin
+make temex-clean && make temex
+truncate --size=8k firmware/temex.bin
 ```
 
 Flash the ROM chip in EEPROM1 position.
@@ -120,7 +120,8 @@ As a convenience, there is a patch file in the repo: `hc11/gel.patch`
 Building the project is then a matter of:
 
 ```
-make-f Makefile.hc11
+make cme11a clean && make cme11a
+truncate --size=8k firmware/cme11a.bin
 ```
 
 The project can be uploaded to a CME11-type board via serial and `hc11/upload.py` script.
@@ -143,8 +144,7 @@ Other: On-board serial programmer/debugger based around another ATmega chip.
 
 ### Build
 ```
-pio init
-pio run -e atmega -t upload
+make uno-clean && make uno-upload
 ```
 
 ## STM32 Bluepill
@@ -158,8 +158,7 @@ Other: External batery connection for RTC bacup, JTAG debugger support
 
 ### Build
 ```
-pio init
-pio run -e stm32 -t upload
+make bluepill-clean && make bluepill-upload
 ```
 
 ## ESP32 C6 super mini
@@ -175,6 +174,5 @@ Other: Built-in core temperature sensor, built-in AES, RSA and HMAC. JTAG debugg
 The caveat for this board is the fact that all the GPIOs used for USB programming are also used for the sketch making reprogramming harder (requires putting the board into the bootloader mode by resetting with the BOOT button depressed at just the right moment for the flash utility to find it).
 
 ```
-pio init
-pio run -e esp32c6 -t upload
+make supermini-clean && make supermini-upload
 ```
