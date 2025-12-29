@@ -136,6 +136,9 @@ If you want to retain the interactive debugging bootloader, a modified Buffalo m
 
 A modified version of the original Axiom Buffalo 3.4AX ROM is available in `hc11/buf34ax.bin` and a modified version that allows running ROM code in `hc11/buf341ax.bin`. This was modified by hand using the `hc11/bufpatch.asm`
 
+The Buffalo Monitor sources come from this repository: https://github.com/tonypdmtr/buffalo
+The code seems to be licensed under the MIT license terms (included in `hc11/LICENSE.buffalo`).
+
 ## Arduino Uno
 Core: ATmega328p, AVR, 8bit
 Clock: 16 MHz
