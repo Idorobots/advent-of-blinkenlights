@@ -21,6 +21,7 @@ void ledBar(uint16_t value) {
 
 const uint64_t STEP_INTERVAL = 50; // 50 ms
 const uint64_t ANIM_INTERVAL = 60000; // 1 minute
+const uint64_t LOG_INTERVAL = 10000; // 10 seconds
 
 static uint8_t anim = 0;
 static uint16_t value = 0;
@@ -144,20 +145,57 @@ void loop(void) {
     nextStepTs = nextStepTs + STEP_INTERVAL;
   }
 
+#if defined(HAS_RTC)
+  struct tm time;
+  getRTCTime(&time);
+
+  // NOTE This condition is reversed wrt to the millis one.
+  if (time.tm_min != nextAnimTs) {
+    nextAnim();
+    nextAnimTs = time.tm_min;
+  }
+#else
   if (now > nextAnimTs) {
     nextAnim();
     nextAnimTs = nextAnimTs + ANIM_INTERVAL;
   }
+#endif
 
   if (now > nextLogTs) {
-    display("Current time: ");
+    display("Current millis: ");
     displayUInt(now);
     display("\r\n");
+
+#if defined(HAS_RTC)
+    getRTCTime(&time);
+    display("Current time: 20");
+    displayUInt(time.tm_year);
+    display("-");
+    if (time.tm_mon < 10) display("0");
+    displayUInt(time.tm_mon);
+    display("-");
+    if (time.tm_mday < 10) display("0");
+    displayUInt(time.tm_mday);
+    display(" ");
+    if (time.tm_hour < 10) display("0");
+    displayUInt(time.tm_hour);
+    display(":");
+    if (time.tm_min < 10) display("0");
+    displayUInt(time.tm_min);
+    display(":");
+    if (time.tm_sec < 10) display("0");
+    displayUInt(time.tm_sec);
+    display(".");
+    if (time.tm_hundredth < 10) display("0");
+    displayUInt(time.tm_hundredth);
+    display("0\r\n");
+#endif
+
     display("Current animation: ");
     displayUInt(anim);
     display("\r\n");
 
-    nextLogTs = nextLogTs + 1000;
+    nextLogTs = nextLogTs + LOG_INTERVAL;
   }
 
   delayMillis(STEP_INTERVAL/5);

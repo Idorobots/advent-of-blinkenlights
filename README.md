@@ -27,6 +27,13 @@ Power draw: 2.5W (9V input)
 
 More on the card here: https://github.com/Idorobots/temex-reverse
 
+Some caveats with this board:
+- Most of the chips on the board had to be replaced due to all kinds of weird failures - the original chips include the CPU, SIO, MAX691CPE and the misc 74XX logic.
+- The CPU reset line (from MAX691CPE) had a massive capacitor on it, causing erractic boot up behaviour. Had to be replaced with a smaller value.
+- Neither EEPROM nor RAM slots utilize the top two JEDEC-pinout address lines, meaning that no more than 8k of memory is addressable in each slot, despite the memory mapping allowing for 16k addresses. The board can be modified to support 32k ROM and 16 RAM (although, all slots need to be populated with 32k chips).
+- RTC/NVRAM battery was not present, not sure what type should be used.
+- RTC clock's oscillator circuit is hooked up to the main 5V line, meaning that when there's no power, it does not oscillate. Very real time, much convenient.
+
 ### Build
 Requires SDCC & related binutils. Tested under the following version:
 
@@ -232,9 +239,9 @@ Other: Built-in core temperature sensor, built-in AES, RSA and HMAC. JTAG debugg
 
 Power draw: 0.1W (not changing the LiPo battery, WiFi & BT powered down)
 
-### Build
-The caveat for this board is the fact that all the GPIOs used for USB programming are also used for the sketch making reprogramming harder (requires putting the board into the bootloader mode by resetting with the BOOT button depressed at just the right moment for the flash utility to find it).
+The caveat for this board is the fact that all the GPIOs used for USB communication are also used for the sketch making flashing harder (requires putting the board into the bootloader mode by resetting with the BOOT button depressed at just the right moment for the flash utility to find it).
 
+### Build
 ```
 make supermini-clean && make supermini-upload
 ```
