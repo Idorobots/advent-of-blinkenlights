@@ -4,9 +4,11 @@ This repository contains a sort-of an Advent of Code, but it's blinkenlights on 
 The goal was simple - create a nontrivial project that runs on multiple different platform dating as far back as the 1970'ties. Natuarally, the project couldn't be too complex, as some of these platforms are fairly limited in terms of memory, so a 16-LED strip "blinkenlights" was chosen.
 Each board expects to sink current for 16 LEDs connected to the pins listed in `main.cpp`. There are several time-based animations available that switch each minute. The boards are also logging some stuff on their respective main serial consoles.
 
-![](./blink.gif)
+![](./images/blink.gif)
 
 ## Temex CPU card
+![](./images/temex.jpg)
+
 Core: Z80, 8 bit
 
 Clock: 2.4576 MHz
@@ -20,6 +22,8 @@ GPIO: 16 I/O via Z80 PIO, 16 input only via memory mapped registers.
 Peripherals: 2 * UART (Z80 SIO), RTC (ICM7170IPG), 4 Timers (Z80 CTC), WDT (MAX691CPE).
 
 Other: SRAM & RTC battery backup (MAX691CPE), second EEPROM slot (max 8k).
+
+Power draw: 2.5W (9V input)
 
 More on the card here: https://github.com/Idorobots/temex-reverse
 
@@ -40,6 +44,8 @@ truncate --size=8k firmware/temex.bin
 Flash the ROM chip in EEPROM1 position.
 
 ## Axiom CME11A
+![](./images/cme11a.jpg)
+
 Core: MC68HC11A1FN, M68HC11, 8 bit
 
 Clock: 8 MHz
@@ -53,6 +59,8 @@ GPIO: 11 I/O (Port D, Port A), 11 input only (Port A, Port E)
 Peripherals: UART (with RS232 port), SCI, SPI, 8-channel 8-bit ADC, 5 timers (16-bit, varying functions), WDT
 
 Other: Ports B and C are used for memory bus expansion, board supports up to 32k chips (any mix of EEPROM and SRAM), on-board bootloader and debugger (Bufalo 3.4, occupies 8k of EEPROM), LCD connector, SS keypad connector, expandable memory-mapped peripherals.
+
+Power draw: 0.5W (9V input)
 
 ### Build
 Requires an m68hc11 toolchain:
@@ -156,6 +164,8 @@ The Buffalo Monitor sources come from this repository: https://github.com/tonypd
 The code seems to be licensed under the MIT license terms (included in `hc11/LICENSE.buffalo`).
 
 ## Arduino Uno
+![](./images/uno.jpg)
+
 Core: ATmega328p, AVR, 8bit
 
 Clock: 16 MHz
@@ -172,12 +182,16 @@ Peripherals: 2 * SPI, I2C, UART, 8-channel 10-bit ADC, 3 timers (2 8-bit and one
 
 Other: On-board serial programmer/debugger based around another ATmega chip.
 
+Power draw: 0.15W
+
 ### Build
 ```
 make uno-clean && make uno-upload
 ```
 
 ## STM32 Bluepill
+![](./images/bluepill.jpg)
+
 Core: STM32F103C8T6, ARM Cortex-M3, 32 bit
 
 Clock: 72 MHz
@@ -190,7 +204,9 @@ GPIO: 32 I/O (some only 3V3-capable, PA13, PA14 and PA15 with reduced electrical
 
 Peripherals: 2 * SPI, 2 * I2C, 2 * 10-channel 12-bit ADC, 3 * UART, CAN, USB 2.0, 4 timers, RTC
 
-Other: External batery connection for RTC bacup, JTAG debugger support
+Other: External batery connection for RTC backup, JTAG debugger support
+
+Power draw: 0.15W
 
 ### Build
 ```
@@ -198,6 +214,8 @@ make bluepill-clean && make bluepill-upload
 ```
 
 ## ESP32 C6 super mini
+![](./images/supermini.jpg)
+
 Cores: ESP32-C6, High Performance Risc-V and Low Power Risc-V, 32 bit
 
 Clock: 160 MHz for HP, 20 MHz for LP
@@ -210,7 +228,9 @@ GPIO: 22 (some not available on a convenient header)
 
 Peripherals: 2.4 GHz Wi-Fi 6 (802.11ax), Bluetooth 5 (LE), IEEE 802.15.4 (Zigbee), 3 * SPI (two for external flash), 3 * UART (one low-power), 2 * I2C (one low-power), I2S, RMT, 2 * TWAI, SDIO, Motor Control PWM, 7-channel 12-bit ADC, USB 2.0, WDT, 7 timers (various functions)
 
-Other: Built-in core temperature sensor, built-in AES, RSA and HMAC. JTAG debugger support
+Other: Built-in core temperature sensor, built-in AES, RSA and HMAC. JTAG debugger support, LiPo battery charger
+
+Power draw: 0.1W (not changing the LiPo battery, WiFi & BT powered down)
 
 ### Build
 The caveat for this board is the fact that all the GPIOs used for USB programming are also used for the sketch making reprogramming harder (requires putting the board into the bootloader mode by resetting with the BOOT button depressed at just the right moment for the flash utility to find it).
