@@ -33,22 +33,25 @@ void displayUInt(uint32_t value) {
 }
 
 volatile uint64_t __currTicks = 0;
-volatile uint8_t __currTicksAdjust = 0;
+volatile uint8_t __currTicksAdjust0 = 0;
+volatile uint8_t __currTicksAdjust1 = 0;
 
 void __attribute__((interrupt)) timer_interrupt (void) {
   __currTicks++;
-  __currTicksAdjust++;
+  __currTicksAdjust0++;
+  __currTicksAdjust1++;
 
   // NOTE Each ms is about 4.096 ticks, we treat that as 4 below,
   // NOTE so we add one extra tick whenever an extra ms would otherwise pass.
   // NOTE This still drifts, but to a much lowe degree.
-  if ((__currTicksAdjust % 40) == 0) {
+  if (__currTicksAdjust0 == 40) {
+    __currTicksAdjust0 = 0;
     __currTicks++;
   }
   // NOTE Now, to avoid the extra drift due to the overestimation 4.096 ~ 4.1, we drop one tick.
-  if (__currTicksAdjust == 250) {
+  if (__currTicksAdjust1 == 250) {
+    __currTicksAdjust1 = 0;
     __currTicks--;
-    __currTicksAdjust = 0;
   }
 
   timer_acknowledge();
