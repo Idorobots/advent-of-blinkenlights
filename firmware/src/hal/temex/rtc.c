@@ -39,7 +39,7 @@ void getRTCTime(struct tm *t) {
   t->tm_hour = RTC_C_H;
   t->tm_mday = RTC_C_D;
   t->tm_mon = RTC_C_MO;
-  t->tm_year = RTC_C_Y + 100; // NOTE That's how Y2K was handled.
+  t->tm_year = RTC_C_Y;
   t->tm_wday = RTC_C_DOW;
   t->tm_yday = 365; // TODO
   t->tm_isdst = 0;

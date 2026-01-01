@@ -1,6 +1,6 @@
-#include "hal/esp32.h"
-
 #if defined(ARDUINO_ARCH_ESP32)
+
+#include "hal/esp32.h"
 
 const char* ssid = ESP32_SSID;
 const char* password = ESP32_PASS;
@@ -33,7 +33,8 @@ void setRTCTime(struct tm *time) {
 
 void getRTCTime(struct tm *time) {
   getLocalTime(time);
+  // NOTE That's how Y2K was handled.
+  time->tm_year = time->tm_year - 100;
 }
-
 
 #endif

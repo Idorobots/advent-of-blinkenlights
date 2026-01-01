@@ -198,7 +198,7 @@ void loop(void) {
 #if defined(HAS_RTC)
     getRTCTime(&time);
     display("Current time: ");
-    displayUInt(1900 + time.tm_year);
+    displayUInt(2000 + time.tm_year);
     display("-");
     if (time.tm_mon < 10) display("0");
     displayUInt(time.tm_mon);
