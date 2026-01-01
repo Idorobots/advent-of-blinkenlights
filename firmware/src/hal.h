@@ -7,6 +7,8 @@
     #include "hal/esp32.h"
   #elif defined(ARDUINO_ARCH_STM32)
     #include "hal/stm32.h"
+  #elif defined(ARDUINO_ARCH_AVR)
+    #include "hal/atmega.h"
   #endif
 
 #else

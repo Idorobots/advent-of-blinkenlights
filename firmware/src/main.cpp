@@ -1,7 +1,8 @@
 #include "hal.h"
 
 #if defined(ARDUINO_ARCH_AVR)
-  const uint8_t LED_PINS[] = { 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 15, 16, 17, 18, 19 };
+  // NOTE The 18 and 19 pins are used for I2C and the RTC.
+  const uint8_t LED_PINS[] = { 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 13, 14, 15, 16, 17, /*18, 19*/ };
 #elif defined(ARDUINO_ARCH_STM32)
   const uint8_t LED_PINS[] = { PB11, PB12, PB13, PB14, PB15, PA8, PA9, PA10, /*PA11, PA12,*/ PA15, PB3, PB4, PB5, PB6, PB7, PB8, PB9 };
 #elif defined(ARDUINO_ARCH_ESP32)
@@ -119,6 +120,10 @@ void step(uint64_t now) {
     }
 }
 
+static uint64_t nextAnimTs = 0;
+static uint64_t nextStepTs = 0;
+static uint64_t nextLogTs = 0;
+
 void setup(void) {
   initSerial();
 
@@ -132,19 +137,18 @@ void setup(void) {
   if (curr.tm_year != 23) {
     display("Setting up RTC clock.\r\n");
 
-    struct tm time = {
-  #if defined(HAS_HUNDREDTH)
-      .tm_hundredth = 0,
-  #endif
-      .tm_sec = 0,
-      .tm_min = 0,
-      .tm_hour = 0,
-      .tm_mday = 1,
-      .tm_mon = 1,
-      .tm_year = 23,
-      .tm_wday = 0,
-      .tm_isdst = 0
-    };
+    struct tm time;
+#if defined(HAS_HUNDREDTH)
+    time.tm_hundredth = 0;
+#endif
+    time.tm_sec = 0;
+    time.tm_min = 0;
+    time.tm_hour = 0;
+    time.tm_mday = 1;
+    time.tm_mon = 1;
+    time.tm_year = 23;
+    time.tm_wday = 0;
+    time.tm_isdst = 0;
 
     setRTCTime(&time);
     toggleRTC(true);
@@ -160,11 +164,23 @@ void setup(void) {
   delayMillis(STEP_INTERVAL);
 
   ledBar(0xffff);
-}
 
-static uint64_t nextAnimTs = 0;
-static uint64_t nextStepTs = 0;
-static uint64_t nextLogTs = 0;
+  uint64_t now = currMillis();
+
+  direction = false;
+  value = 0;
+
+#if defined(HAS_RTC)
+  nextAnimTs = now - 1;
+  anim = curr.tm_min % 7;
+#else
+  nextAnimTs = curr.tm_min;
+  anim = 0;
+#endif
+
+  nextStepTs = now - 1;
+  nextLogTs = now - 1;
+}
 
 void loop(void) {
   uint64_t now = currMillis();
@@ -179,12 +195,12 @@ void loop(void) {
   getRTCTime(&time);
 
   // NOTE This condition is reversed wrt to the millis one.
-  if (time.tm_min != nextAnimTs) {
+  if (((uint64_t) time.tm_min) != nextAnimTs) {
     nextAnim();
     nextAnimTs = time.tm_min;
   }
 #else
-  if (now > nextAnimTs) {
+  if (now >= nextAnimTs) {
     nextAnim();
     nextAnimTs = nextAnimTs + ANIM_INTERVAL;
   }

@@ -1,6 +1,6 @@
-#include "hal/stm32.h"
-
 #if defined(ARDUINO_ARCH_STM32)
+
+#include "hal/stm32.h"
 
 STM32RTC& rtc = STM32RTC::getInstance();
 

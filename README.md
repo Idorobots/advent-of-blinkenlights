@@ -192,6 +192,8 @@ Other: On-board serial programmer/debugger based around another ATmega chip.
 
 Power draw: 0.15W
 
+An external I2C DS3231 RTC is supported for this board.
+
 ### Build
 ```
 make uno-clean && make uno-upload
@@ -241,6 +243,8 @@ Other: Built-in core temperature sensor, built-in AES, RSA and HMAC. JTAG debugg
 Power draw: 0.1W (not changing the LiPo battery, WiFi & BT powered down)
 
 The caveat for this board is the fact that all the GPIOs used for USB communication are also used for the sketch making flashing harder (requires putting the board into the bootloader mode by resetting with the BOOT button depressed at just the right moment for the flash utility to find it).
+
+This board implements the RTC HAL routines with NTP, so it doesn't require setting up the time, but does require a WiFi connection to be set up.
 
 ### Build
 ```
