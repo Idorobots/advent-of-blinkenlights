@@ -3,6 +3,10 @@
 #if defined(ARDUINO)
   #include <Arduino.h>
 
+  #if defined(ARDUINO_ARCH_ESP32)
+    #include "hal/esp32.h"
+  #endif
+
 #else
   #include <stdint.h>
   #include <stdbool.h>
@@ -35,7 +39,9 @@ void initSerial(void);
 void display(const char *str);
 void displayUInt(uint32_t value);
 
-void initRTC(void);
-void toggleRTC(bool run);
-void setRTCTime(struct tm *time);
-void getRTCTime(struct tm *time);
+#if defined(HAS_RTC)
+  void initRTC(void);
+  void toggleRTC(bool run);
+  void setRTCTime(struct tm *time);
+  void getRTCTime(struct tm *time);
+#endif

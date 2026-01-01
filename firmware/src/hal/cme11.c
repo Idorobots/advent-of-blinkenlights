@@ -1,7 +1,4 @@
-#include "hal.h"
-
 // mc68hc11-based boards
-
 #if defined(HC11_ARCH_CME11)
 
 #include "hal/cme11.h"

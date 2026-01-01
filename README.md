@@ -244,5 +244,7 @@ The caveat for this board is the fact that all the GPIOs used for USB communicat
 
 ### Build
 ```
+export WIFI_SSID='\"...\"'
+export WIFI_PASS='\"...\"'
 make supermini-clean && make supermini-upload
 ```

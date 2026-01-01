@@ -1,5 +1,6 @@
 #pragma once
 
+#include "hal.h"
 #include <sys/sio.h>
 #include <sys/ports.h>
 #include <sys/time.h>

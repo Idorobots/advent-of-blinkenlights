@@ -133,7 +133,9 @@ void setup(void) {
     display("Setting up RTC clock.\r\n");
 
     struct tm time = {
+  #if defined(HAS_HUNDREDTH)
       .tm_hundredth = 0,
+  #endif
       .tm_sec = 0,
       .tm_min = 0,
       .tm_hour = 0,
@@ -195,8 +197,8 @@ void loop(void) {
 
 #if defined(HAS_RTC)
     getRTCTime(&time);
-    display("Current time: 20");
-    displayUInt(time.tm_year);
+    display("Current time: ");
+    displayUInt(1900 + time.tm_year);
     display("-");
     if (time.tm_mon < 10) display("0");
     displayUInt(time.tm_mon);
@@ -212,10 +214,13 @@ void loop(void) {
     display(":");
     if (time.tm_sec < 10) display("0");
     displayUInt(time.tm_sec);
+  #if defined(HAS_HUNDREDTH)
     display(".");
     if (time.tm_hundredth < 10) display("0");
     displayUInt(time.tm_hundredth);
-    display("0\r\n");
+    display("0");
+  #endif
+    display("\r\n");
 #endif
 
     display("Current animation: ");

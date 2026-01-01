@@ -1,7 +1,7 @@
 AS=sdasz80 
 ASFLAGS=-xlos
 CC=sdcc
-CFLAGS=--std c23 -mz80 --no-std-crt0 -Isrc --opt-code-size --Werror -DZ80_ARCH_TEMEX -DHAS_RTC
+CFLAGS=--std c23 -mz80 --no-std-crt0 -Isrc --opt-code-size --Werror -DZ80_ARCH_TEMEX -DHAS_RTC -DHAS_HUNDREDTH
 LD=sdcc
 LDFLAGS=-mz80 --no-std-crt0 -Wl -y --code-size 8192 --code-loc 0x0090 --data-loc 0xb000 --stack-loc 0x8200
 OBJCOPY=sdobjcopy
