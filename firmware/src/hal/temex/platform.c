@@ -54,6 +54,11 @@ void initSerial(void) {
   initSIO(0x00);
 }
 
+void initRTC(void) {
+  initRTCInt(false, 0x00); // No interrupts, keep running.
+  toggleRTC(true);
+}
+
 unsigned char __sdcc_external_startup(void) {
   if (getInterruptVector(0x16) == ctcC3Timer
       && getInterruptVector(0x0c) == sioARXByteAvailable
@@ -82,29 +87,7 @@ int main(void) {
   initPIOA(PIO_INPUT); // Input
   initPIOB(PIO_INPUT); // Input
   initPortsCD();
-
-  struct tm curr;
-  getRTCTime(&curr);
-
-  // TODO Ideally should be handled by a command from Serial
-  if (curr.tm_year != 23) {
-    display("Setting up RTC clock.\r\n");
-
-    struct tm time = {
-      .tm_hundredth = 0,
-      .tm_sec = 0,
-      .tm_min = 0,
-      .tm_hour = 0,
-      .tm_mday = 1,
-      .tm_mon = 1,
-      .tm_year = 23,
-      .tm_wday = 0,
-      .tm_isdst = 0
-    };
-    initRTC(false, 0x00);
-    setRTCTime(&time);
-    initRTC(true, 0x00);
-  }
+  initRTCInt(false, 0x00);
 
   // Re-enable interrupts just in case.
   initInterrupts();

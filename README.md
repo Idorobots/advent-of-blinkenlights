@@ -33,6 +33,7 @@ Some caveats with this board:
 - Neither EEPROM nor RAM slots utilize the top two JEDEC-pinout address lines, meaning that no more than 8k of memory is addressable in each slot, despite the memory mapping allowing for 16k addresses. The board can be modified to support 32k ROM and 16 RAM (although, all slots need to be populated with 32k chips).
 - RTC/NVRAM battery was not present, not sure what type should be used.
 - RTC clock's oscillator circuit is hooked up to the main 5V line, meaning that when there's no power, it does not oscillate. Very real time, much convenient.
+- RTC chip requires pullups on RD & WR lines during external backup. These were not present on the board preventing the chip from counting time during backup.
 
 ### Build
 Requires SDCC & related binutils. Tested under the following version:

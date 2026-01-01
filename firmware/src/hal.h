@@ -7,6 +7,7 @@
   #include <stdint.h>
   #include <stdbool.h>
   #include <stdarg.h>
+  #include <time.h>
 
   #define INPUT 0
   #define OUTPUT 1
@@ -34,3 +35,7 @@ void initSerial(void);
 void display(const char *str);
 void displayUInt(uint32_t value);
 
+void initRTC(void);
+void toggleRTC(bool run);
+void setRTCTime(struct tm *time);
+void getRTCTime(struct tm *time);

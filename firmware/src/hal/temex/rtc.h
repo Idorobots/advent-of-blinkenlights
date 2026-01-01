@@ -26,9 +26,10 @@ __sfr __at(0xcf) RTC_R_DOW;
 __sfr __at(0xd0) RTC_INT;
 __sfr __at(0xd1) RTC_CTRL;
 
-void initRTC(bool run, uint8_t interrupt);
+void toggleRTC(bool run);
 void setRTCTime(struct tm *t);
 void getRTCTime(struct tm *t);
+void initRTCInt(bool interrupts, uint8_t interrupt);
 
 // TODO For SDCC libc time() support.
 #ifdef HAVE_RTC

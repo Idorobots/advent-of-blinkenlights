@@ -122,6 +122,33 @@ void step(uint64_t now) {
 void setup(void) {
   initSerial();
 
+#if defined(HAS_RTC)
+  initRTC();
+
+  struct tm curr;
+  getRTCTime(&curr);
+
+  // TODO Ideally should be handled by a command from Serial
+  if (curr.tm_year != 23) {
+    display("Setting up RTC clock.\r\n");
+
+    struct tm time = {
+      .tm_hundredth = 0,
+      .tm_sec = 0,
+      .tm_min = 0,
+      .tm_hour = 0,
+      .tm_mday = 1,
+      .tm_mon = 1,
+      .tm_year = 23,
+      .tm_wday = 0,
+      .tm_isdst = 0
+    };
+
+    setRTCTime(&time);
+    toggleRTC(true);
+  }
+#endif
+
   for (uint8_t i = 0; i < 16; i++) {
     pinMode(LED_PINS[i], OUTPUT);
   }

@@ -2,13 +2,22 @@
 
 #if defined(Z80_ARCH_TEMEX)
 
-void initRTC(bool run, uint8_t interrupt) {
+void toggleRTC(bool run) {
+  if (run) {
+    RTC_CTRL = 0x0c; // Run on, 24h, 32k crystal.
+  } else {
+    RTC_CTRL = 0x04; // Run off, 24h, 32k crystal.
+  }
+}
+
+void initRTCInt(bool interrupts, uint8_t interrupt) {
   RTC_INT = interrupt; // Reset interrupts.
 
-  if (run) {
-    RTC_CTRL = 0x0c; // Interrupt off, run on, 24h, 32k crystal.
+  uint8_t curr = RTC_CTRL;
+  if (interrupts) {
+    RTC_CTRL = curr | 0x10; // Enable interrupts.
   } else {
-    RTC_CTRL = 0x04; // Interrupt off, run off, 24h, 32k crystal.
+    RTC_CTRL = curr & ~0x10; // Disable interrupts.
   }
 }
 
