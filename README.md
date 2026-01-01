@@ -242,7 +242,7 @@ Other: Built-in core temperature sensor, built-in AES, RSA and HMAC. JTAG debugg
 
 Power draw: 0.1W (not changing the LiPo battery, WiFi & BT powered down)
 
-The caveat for this board is the fact that all the GPIOs used for USB communication are also used for the sketch making flashing harder (requires putting the board into the bootloader mode by resetting with the BOOT button depressed at just the right moment for the flash utility to find it).
+The caveat for this board is the fact that some of the GPIOs available on the headers are used for USB communication, either making it harder to program the board when these pins are used, or having to solder the much less convenient microdot pins.
 
 This board implements the RTC HAL routines with NTP, so it doesn't require setting up the time, but does require a WiFi connection to be set up.
 
