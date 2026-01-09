@@ -162,7 +162,7 @@ truncate --size=8k firmware/cme11a.bin
 
 The project can be uploaded to a CME11-type board via serial and `hc11/upload.py` script. You may need to upgrade the U5 RAM chip to 32k.
 
-Alternatively, you can update the memory map to point the `text` section to U6 EPROM space and burn it into a ROM chip. You will need to update the reset vector in Buffalo EPROM U7 to point to `0x8000` for the program to start automatically.
+Alternatively, you can update the `hc11/memory.x` memory map to point the `text` section to U6 EPROM space and burn it into a ROM chip. You will need to update the reset vector in Buffalo EPROM U7 to point to `0x8000` for the program to start automatically.
 
 If you want to retain the interactive debugging bootloader, a modified Buffalo monitor is provided in `hc11/buf341.asm`. In can be compiled with `asm11` and burned to the U7 ROM chip. It's not exctly the same as the version on the board, but the functionality is complete. The modification causes Buffalo to jump to `0x8000` when pin 0 of `PORTE` is high at boot.
 
@@ -251,4 +251,36 @@ This board implements the RTC HAL routines with NTP, so it doesn't require setti
 export WIFI_SSID='\"...\"'
 export WIFI_PASS='\"...\"'
 make supermini-clean && make supermini-upload
+```
+
+## MSP430 EXP430FR2355
+
+Initially the project did not build as the vectors section overlapped the text section of the binary -  HC11 linker memory map would be picked up by the MSP430 GCC to use instead of the proper MSP one. `mspdebug` does not detect the eZ-FET probe on the board.
+
+### Build
+
+The platform uses Platform IO, but requires some additional setup:
+
+- Install `python 2.7` as it is required for upload via `dslite` to work.
+- Alternatively, use the `mspdebug` upload tool with `tilib` (aka. MSP Debug Stack):
+
+```
+cd msp430
+# wget https://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSPDS/3_15_1_001/export/MSPDebugStack_OS_Package_3_15_1_1.zip
+mkdir build
+cd build
+unzip ../MSPDebugStack_OS_Package_3_15_1_1.zip
+cd ..
+patch -p0 < mspdb.patch
+cd build
+make
+cd ../..
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:`pwd`/msp430/build"
+```
+
+- Alternatively, you can obtain the `libmsp430.so` from CCS: https://www.ti.com/tool/CCSTUDIO#downloads
+
+This way one can use the `tilib` upload protocol for the flashing.
+```
+make msp-launchpad-clean && make msp-launchpad-upload
 ```

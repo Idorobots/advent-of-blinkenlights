@@ -1,0 +1,138 @@
+diff -aur orig/DLL430_v3/src/TI/DLL430/HidUpdateManager.cpp build/DLL430_v3/src/TI/DLL430/HidUpdateManager.cpp
+--- orig/DLL430_v3/src/TI/DLL430/HidUpdateManager.cpp	2019-11-18 13:16:00.000000000 +0100
++++ build/DLL430_v3/src/TI/DLL430/HidUpdateManager.cpp	2026-01-09 13:53:09.622026847 +0100
+@@ -38,7 +38,7 @@
+ #include <pch.h>
+ #include "HidUpdateManager.h"
+ 
+-#include <hidapi.h>
++#include <hidapi/hidapi.h>
+ 
+ #include <BSL430_DLL/Connections/MSPBSL_Connection5xxUSB.h>
+ #include <BSL430_DLL/MSPBSL_Factory.h>
+diff -aur orig/DLL430_v3/src/TI/DLL430/UsbCdcIoChannel.cpp build/DLL430_v3/src/TI/DLL430/UsbCdcIoChannel.cpp
+--- orig/DLL430_v3/src/TI/DLL430/UsbCdcIoChannel.cpp	2020-06-03 16:10:10.000000000 +0200
++++ build/DLL430_v3/src/TI/DLL430/UsbCdcIoChannel.cpp	2026-01-09 14:00:55.688060565 +0100
+@@ -42,7 +42,7 @@
+ 
+ #include <boost/asio/read.hpp>
+ #include <boost/asio/write.hpp>
+-#include <boost/asio/io_service.hpp>
++#include <boost/asio/io_context.hpp>
+ 
+ #if defined(_WIN32) || defined(_WIN64)
+ 
+@@ -376,7 +376,7 @@
+ 
+ bool UsbCdcIoChannel::openPort()
+ {
+-	ioService = new boost::asio::io_service;
++	ioService = new boost::asio::io_context;
+ 	port = new boost::asio::serial_port(*ioService);
+ 	timer = new boost::asio::deadline_timer(*ioService);
+ 
+@@ -542,7 +542,7 @@
+ 
+ 	boost::system::error_code ec;
+ 
+-	while (ioService->run_one(ec))
++	while (ioService->run_one())
+ 	{
+ 		if (readEvent)
+ 		{
+@@ -577,13 +577,13 @@
+ 
+ 		if (ioService->stopped())
+ 		{
+-			ioService->reset();
++			ioService->restart();
+ 		}
+ 	}
+ 
+ 	//Let cancelled tasks finish
+-	ioService->run(ec);
+-	ioService->reset();
++	ioService->run();
++	ioService->restart();
+ 
+ 
+ 	if (actSize == expSize)
+diff -aur orig/DLL430_v3/src/TI/DLL430/UsbCdcIoChannel.h build/DLL430_v3/src/TI/DLL430/UsbCdcIoChannel.h
+--- orig/DLL430_v3/src/TI/DLL430/UsbCdcIoChannel.h	2020-02-14 12:38:32.000000000 +0100
++++ build/DLL430_v3/src/TI/DLL430/UsbCdcIoChannel.h	2026-01-09 13:55:58.880881650 +0100
+@@ -45,7 +45,7 @@
+ 
+ #include <boost/asio/serial_port.hpp>
+ #include <boost/asio/deadline_timer.hpp>
+-#include <boost/asio/io_service.hpp>
++#include <boost/asio/io_context.hpp>
+ 
+ namespace TI
+ {
+@@ -74,7 +74,7 @@
+ 
+ 		private:
+ 			std::vector<uint8_t> inputBuffer;
+-			boost::asio::io_service* ioService;
++			boost::asio::io_context* ioService;
+ 			boost::asio::serial_port* port;
+ 			boost::asio::deadline_timer* timer;
+ 			ComState comState;
+Only in build/: libmsp430.so
+Only in build/: linux64.a
+diff -aur orig/Makefile build/Makefile
+--- orig/Makefile	2020-06-03 16:10:18.000000000 +0200
++++ build/Makefile	2026-01-09 14:06:27.159029657 +0100
+@@ -34,7 +34,7 @@
+ ifdef STATIC
+ STATIC_LIBS += -lboost_filesystem -lboost_system -lbsl430 -lboost_date_time -lboost_chrono -lboost_thread
+ else
+-LIBS += -lboost_filesystem -lboost_system -lbsl430 -lboost_date_time -lboost_chrono -lboost_thread
++LIBS += -lboost_filesystem -lboost_system -lbsl430 -lboost_date_time -lboost_chrono -lboost_thread -lhidapi-libusb
+ endif
+ 
+ LIBTHIRD := ./ThirdParty/lib64
+@@ -123,7 +123,7 @@
+ OBJS := $(patsubst %.cpp, %.o, $(SRC))
+ 
+ all: $(BSLLIB) $(OBJS)
+-	$(CXX) $(CXXFLAGS) -shared $(OUTNAME)$(OUTPUT) -o $(OUTPUT) $(OBJS) $(HIDOBJ) $(LIBDIRS) $(BSTATIC) $(STATIC_LIBS) $(BDYNAMIC) $(LIBS)
++	$(CXX) $(CXXFLAGS) -shared $(OUTNAME)$(OUTPUT) -o $(OUTPUT) $(OBJS) $(LIBDIRS) $(BSTATIC) $(STATIC_LIBS) $(BDYNAMIC) $(LIBS)
+ 	rm -f $(STATICOUTPUT).a
+ 	ar -rs $(STATICOUTPUT).a $(OBJS)
+ 
+diff -aur orig/ThirdParty/BSL430_DLL/BSL430_DLL/Physical_Interfaces/MSPBSL_PhysicalInterfaceSerialUART.cpp build/ThirdParty/BSL430_DLL/BSL430_DLL/Physical_Interfaces/MSPBSL_PhysicalInterfaceSerialUART.cpp
+--- orig/ThirdParty/BSL430_DLL/BSL430_DLL/Physical_Interfaces/MSPBSL_PhysicalInterfaceSerialUART.cpp	2020-02-14 12:38:32.000000000 +0100
++++ build/ThirdParty/BSL430_DLL/BSL430_DLL/Physical_Interfaces/MSPBSL_PhysicalInterfaceSerialUART.cpp	2026-01-09 13:54:30.763075262 +0100
+@@ -129,7 +129,7 @@
+ 
+ 
+ 	//TODO: Catch exception forunknown ports
+-	io_service io;
++	io_context io;
+     port = new serial_port( io, PORT );
+ 	port->set_option( serial_port_base::character_size( 8 ) );
+ 	port->set_option( serial_port_base::flow_control( serial_port_base::flow_control::none ) );
+diff -aur orig/ThirdParty/BSL430_DLL/BSL430_DLL/Physical_Interfaces/MSPBSL_PhysicalInterfaceSerialUART.h build/ThirdParty/BSL430_DLL/BSL430_DLL/Physical_Interfaces/MSPBSL_PhysicalInterfaceSerialUART.h
+--- orig/ThirdParty/BSL430_DLL/BSL430_DLL/Physical_Interfaces/MSPBSL_PhysicalInterfaceSerialUART.h	2019-11-18 13:16:00.000000000 +0100
++++ build/ThirdParty/BSL430_DLL/BSL430_DLL/Physical_Interfaces/MSPBSL_PhysicalInterfaceSerialUART.h	2026-01-09 13:54:12.169501585 +0100
+@@ -72,6 +72,6 @@
+ 	virtual std::string getErrorInformation( uint16_t err );
+ 
+ private:
+-    boost::asio::io_service io;
++    boost::asio::io_context io;
+     boost::asio::serial_port* port;
+ };
+diff -aur orig/ThirdParty/BSL430_DLL/BSL430_DLL/Physical_Interfaces/MSPBSL_PhysicalInterfaceUSB.h build/ThirdParty/BSL430_DLL/BSL430_DLL/Physical_Interfaces/MSPBSL_PhysicalInterfaceUSB.h
+--- orig/ThirdParty/BSL430_DLL/BSL430_DLL/Physical_Interfaces/MSPBSL_PhysicalInterfaceUSB.h	2019-11-18 13:16:00.000000000 +0100
++++ build/ThirdParty/BSL430_DLL/BSL430_DLL/Physical_Interfaces/MSPBSL_PhysicalInterfaceUSB.h	2026-01-09 13:51:55.361068377 +0100
+@@ -38,7 +38,7 @@
+ 
+ #pragma once
+ 
+-#include <hidapi.h>
++#include <hidapi/hidapi.h>
+ 
+ #include "MSPBSL_PhysicalInterface.h"
+ 

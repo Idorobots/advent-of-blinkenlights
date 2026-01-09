@@ -1,7 +1,7 @@
 CC=m68hc11-elf-gcc
 CFLAGS=-std=c99 -Os -g -mshort -Dmc6811 -DHC11_ARCH_CME11 -Isrc -Isrc -I../hc11/build/include -I../hc11/build/include/asm-m68hc11/arch-cme11
 LD=m68hc11-elf-gcc
-LDFLAGS=$(CFLAGS) -Wl,-m,m68hc11elfb -Wl,-O -Wl,--relax
+LDFLAGS=$(CFLAGS) -Wl,-m,m68hc11elfb -Wl,-O -Wl,--relax -L../hc11
 LIBS=../hc11/build/lib/libc.a ../hc11/build/lib/libgel.a ../hc11/build/lib/libbsp.a ../hc11/build/lib/libutil.a
 OBJCOPY=m68hc11-elf-objcopy
 OBJCOPYFLAGS=--only-section=.text --only-section=.rodata --only-section=.vectors --only-section=.data

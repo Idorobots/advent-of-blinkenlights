@@ -7,6 +7,8 @@
   const uint8_t LED_PINS[] = { PB11, PB12, PB13, PB14, PB15, PA8, PA9, PA10, /*PA11, PA12,*/ PA15, PB3, PB4, PB5, PB6, PB7, PB8, PB9 };
 #elif defined(ARDUINO_ARCH_ESP32)
   const uint8_t LED_PINS[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 18, 19, 20, /*12, 13*/ 15, 21 };
+#elif defined(ENERGIA_ARCH_MSP430)
+const uint8_t LED_PINS[] = { P1_5, P1_6, P1_7, P3_6, P5_2, P4_5, P3_4, P1_3, P1_4, P5_3, P5_1, P5_0, P5_4, P1_1, P3_5, P3_1 };
 #elif defined(Z80_ARCH_TEMEX)
   const uint8_t LED_PINS[] = {PB0, PB1, PB2, PB3, PB4, PB5, PB6, PB7, PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7 };
 #elif defined(HC11_ARCH_CME11)
@@ -174,7 +176,7 @@ void setup(void) {
   nextAnimTs = now - 1;
   anim = curr.tm_min % 7;
 #else
-  nextAnimTs = curr.tm_min;
+  nextAnimTs = now - 1;
   anim = 0;
 #endif
 

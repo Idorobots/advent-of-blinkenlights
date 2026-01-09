@@ -52,5 +52,17 @@ supermini-clean:
 supermini-upload:
 	@ cd firmware && pio run -e esp32c6 -t upload
 
+.PHONY: msp-launchpad
+msp-launchpad:
+	@ cd firmware && pio run -e msp430
+
+.PHONY: msp-launchpad-clean
+msp-launchpad-clean:
+	@ cd firmware && pio run -e msp430 -t clean
+
+.PHONY: msp-launchpad-upload
+msp-launchpad-upload:
+	@ cd firmware && pio run -e msp430 -t upload
+
 .PHONY: clean
-clean: temex-clean cme11a-clean uno-clean bluepill-clean supermini-clean
+clean: temex-clean cme11a-clean uno-clean bluepill-clean supermini-clean msp-launchpad-clean

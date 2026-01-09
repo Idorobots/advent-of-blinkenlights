@@ -1,2 +1,3 @@
 hc11/
 *.patch
+msp430/build
