@@ -99,7 +99,8 @@ void digitalWrite(uint8_t pin, uint8_t value) {
     _io_ports[M6811_PORTA] = PA_VALUE;
   } else if (pin >= PD2 && pin <= PD5) {
     PD_VALUE = (value == LOW) ? (PD_VALUE & ~mask) : (PD_VALUE | mask);
-    _io_ports[M6811_PORTD] = PD_VALUE;
+    uint8_t PD_UART = _io_ports[M6811_PORTD] & 0x03;
+    _io_ports[M6811_PORTD] = PD_UART | PD_VALUE;
   } else if (pin >= PX0 && pin <= PX7) {
     PX_VALUE = (value == LOW) ? (PX_VALUE & ~mask) : (PX_VALUE | mask);
 
