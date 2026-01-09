@@ -12,7 +12,7 @@ const uint8_t LED_PINS[] = { P1_5, P1_6, P1_7, P3_6, P5_2, P4_5, P3_4, P1_3, P1_
 #elif defined(Z80_ARCH_TEMEX)
   const uint8_t LED_PINS[] = {PB0, PB1, PB2, PB3, PB4, PB5, PB6, PB7, PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7 };
 #elif defined(HC11_ARCH_CME11)
-const uint8_t LED_PINS[] = {PX0, PX1, PX2, PX3, PX4, PX5, PX6, PX7, /*PA0, PA1, PA2,*/ PD2, PD3, PD4, /*PA3,*/ PD5, PA4, PA5, PA6, PA7 };
+  const uint8_t LED_PINS[] = {PX7, PX6, PX5, PX4, PX3, PX2, PX1, PX0, PD2, PD3, PD4, PD5, PA4, PA5, PA6, PA7 };
 #endif
 
 void ledBar(uint16_t value) {
