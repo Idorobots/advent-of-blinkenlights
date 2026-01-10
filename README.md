@@ -11,6 +11,8 @@ Each board expects to sink current for 16 LEDs connected to the pins listed in `
 
 Core: Z80, 8 bit
 
+Core voltage: 5V
+
 Clock: 2.4576 MHz
 
 SRAM: 8k
@@ -55,6 +57,8 @@ Flash the ROM chip in EEPROM1 position.
 ![](./images/cme11a.jpg)
 
 Core: MC68HC11A1FN, M68HC11, 8 bit
+
+Core voltage: 5V
 
 Clock: 8 MHz
 
@@ -176,6 +180,8 @@ The code seems to be licensed under the MIT license terms (included in `hc11/LIC
 
 Core: ATmega328p, AVR, 8bit
 
+Core voltage: 5V (can go as low as 2.7V at slower clock)
+
 Clock: 16 MHz
 
 SRAM: 2k
@@ -199,10 +205,64 @@ An external I2C DS3231 RTC is supported for this board.
 make uno-clean && make uno-upload
 ```
 
+## MSP430 EXP430FR2355
+
+Cores: MSP430 FR2355, 16 bit
+
+Core voltage: 1.8V - 3.6V
+
+Clock: 24 MHz, 32 kHz clock, 10 kHz low power oscillator
+
+SRAM: 4k
+
+ROM: 20k
+
+FRAM: 32k program, 512 data
+
+GPIO: 44, various functions
+
+Peripherals: 12-channel 12-bit ADC, 12-bit DAC, 5 16-bit timers, hardware multiplier, 2 * SPI, 2 * UART, 2 * I2C, 16-bit CRC, 16-bit RTC timer, WDT, JTAG
+
+Other: low-power ferroelectric RAM & other power-related optimization features, Built in eZ-FET debugger, low-power tracing capability, on-board ambient light sensor
+
+Power draw: 0.11W
+
+### Build
+
+Initially the project did not build as the vectors section overlapped the text section of the binary - HC11 linker memory map would be picked up by the MSP430 GCC to use instead of the proper MSP one.
+
+The platform uses Platform IO, but requires some additional setup:
+
+- Install `python 2.7` as it is required for upload via `dslite` to work.
+- Alternatively, use the `mspdebug` upload tool with `tilib` (aka. MSP Debug Stack):
+
+```
+cd msp430
+# wget https://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSPDS/3_15_1_001/export/MSPDebugStack_OS_Package_3_15_1_1.zip
+mkdir build
+cd build
+unzip ../MSPDebugStack_OS_Package_3_15_1_1.zip
+cd ..
+patch -p0 < mspdb.patch
+cd build
+make
+cd ../..
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:`pwd`/msp430/build"
+```
+
+- Alternatively, you can obtain the `libmsp430.so` from CCS: https://www.ti.com/tool/CCSTUDIO#downloads
+- `mspdebug` might need to be update outside of PlatformIO as the version bundled with Platform IO does not detect the eZ-FET probe on the board.
+
+```
+make msp-launchpad-clean && make msp-launchpad-upload
+```
+
 ## STM32 Bluepill
 ![](./images/bluepill.jpg)
 
 Core: STM32F103C8T6, ARM Cortex-M3, 32 bit
+
+Core voltage: 2V - 3.6V
 
 Clock: 72 MHz
 
@@ -228,6 +288,8 @@ make bluepill-clean && make bluepill-upload
 
 Cores: ESP32-C6, High Performance Risc-V and Low Power Risc-V, 32 bit
 
+Core voltage: 3.3V
+
 Clock: 160 MHz for HP, 20 MHz for LP
 
 SRAM: 512K for HP, 16k for LP
@@ -251,36 +313,4 @@ This board implements the RTC HAL routines with NTP, so it doesn't require setti
 export WIFI_SSID='\"...\"'
 export WIFI_PASS='\"...\"'
 make supermini-clean && make supermini-upload
-```
-
-## MSP430 EXP430FR2355
-
-Initially the project did not build as the vectors section overlapped the text section of the binary -  HC11 linker memory map would be picked up by the MSP430 GCC to use instead of the proper MSP one. `mspdebug` does not detect the eZ-FET probe on the board.
-
-### Build
-
-The platform uses Platform IO, but requires some additional setup:
-
-- Install `python 2.7` as it is required for upload via `dslite` to work.
-- Alternatively, use the `mspdebug` upload tool with `tilib` (aka. MSP Debug Stack):
-
-```
-cd msp430
-# wget https://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSPDS/3_15_1_001/export/MSPDebugStack_OS_Package_3_15_1_1.zip
-mkdir build
-cd build
-unzip ../MSPDebugStack_OS_Package_3_15_1_1.zip
-cd ..
-patch -p0 < mspdb.patch
-cd build
-make
-cd ../..
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:`pwd`/msp430/build"
-```
-
-- Alternatively, you can obtain the `libmsp430.so` from CCS: https://www.ti.com/tool/CCSTUDIO#downloads
-
-This way one can use the `tilib` upload protocol for the flashing.
-```
-make msp-launchpad-clean && make msp-launchpad-upload
 ```
