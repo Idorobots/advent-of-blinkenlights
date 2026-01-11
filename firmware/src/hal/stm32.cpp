@@ -2,6 +2,7 @@
 
 #include "hal/stm32.h"
 
+#if defined(HAS_RTC)
 STM32RTC& rtc = STM32RTC::getInstance();
 
 void initRTC(void) {
@@ -33,5 +34,6 @@ void getRTCTime(struct tm *time) {
   time->tm_min = min;
   time->tm_sec = sec;
 }
+#endif
 
 #endif

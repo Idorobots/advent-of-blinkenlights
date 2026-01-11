@@ -4,7 +4,12 @@
   // NOTE The 18 and 19 pins are used for I2C and the RTC.
   const uint8_t LED_PINS[] = { 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 13, 14, 15, 16, 17, /*18, 19*/ };
 #elif defined(ARDUINO_ARCH_STM32)
-  const uint8_t LED_PINS[] = { PB11, PB12, PB13, PB14, PB15, PA8, PA9, PA10, /*PA11, PA12,*/ PA15, PB3, PB4, PB5, PB6, PB7, PB8, PB9 };
+  #if defined(STM32_ALT_PINOUT)
+    // Note Nucleo-specific pinout.
+    const uint8_t LED_PINS[] = { PA0, PA1, PA3, /*PA4,*/ PB3, PA7, PA9, PA10, PA12, PB0, PB7, /*PB6,*/ PA2, PB1, PA8, PA11, PB5, PB4 };
+  #elif
+    const uint8_t LED_PINS[] = { PB11, PB12, PB13, PB14, PB15, PA8, PA9, PA10, /*PA11, PA12,*/ PA15, PB3, PB4, PB5, PB6, PB7, PB8, PB9 };
+  #endif
 #elif defined(ARDUINO_ARCH_ESP32)
   const uint8_t LED_PINS[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 18, 19, 20, /*12, 13*/ 15, 21 };
 #elif defined(ENERGIA_ARCH_MSP430)

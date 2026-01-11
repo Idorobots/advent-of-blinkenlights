@@ -206,6 +206,7 @@ make uno-clean && make uno-upload
 ```
 
 ## MSP430 EXP430FR2355
+![](./images/launchpad.jpg)
 
 Cores: MSP430 FR2355, 16 bit
 
@@ -281,6 +282,33 @@ Power draw: 0.15W
 ### Build
 ```
 make bluepill-clean && make bluepill-upload
+```
+## STM32 Nucleo
+![](./images/nucleo.jpg)
+
+Core: STM32L432KC, ARM Cortex-M4, 32 bit
+
+Core voltage: 1.65V - 3.6V
+
+Clock: 80 MHz
+
+SRAM: 64K
+
+FLASH: 256K
+
+GPIO: 20 I/O (some require jumper setting changes)
+
+Peripherals: 2 * SPI, 2 * I2S, 2 * I2C, 2 * 10-channel 12-bit ADC, DAC, 3 * UART, CAN, USB 2.0, 4 timers, HW RNG, RTC (no power backup)
+
+Other: Built-in STLink/v2-1, JTAG debugger support
+
+Power draw: 0.325W
+
+This chip has an RTC built-in, but it does not expose the `V_BAT` pin, so no backup power-down mode is available.
+
+### Build
+```
+make nucleo-clean && make nucleo-upload
 ```
 
 ## ESP32 C6 super mini

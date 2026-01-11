@@ -30,15 +30,27 @@ uno-upload:
 
 .PHONY: bluepill
 bluepill:
-	@ cd firmware && pio run -e stm32
+	@ cd firmware && pio run -e stm32-bluepill
 
 .PHONY: bluepill-clean
 bluepill-clean:
-	@ cd firmware && pio run -e stm32 -t clean
+	@ cd firmware && pio run -e stm32-bluepill -t clean
 
 .PHONY: bluepill-upload
 bluepill-upload:
-	@ cd firmware && pio run -e stm32 -t upload
+	@ cd firmware && pio run -e stm32-bluepill -t upload
+
+.PHONY: nucleo
+nucleo:
+	@ cd firmware && pio run -e stm32-nucleo
+
+.PHONY: nucleo-clean
+nucleo-clean:
+	@ cd firmware && pio run -e stm32-nucleo -t clean
+
+.PHONY: nucleo-upload
+nucleo-upload:
+	@ cd firmware && pio run -e stm32-nucleo -t upload
 
 .PHONY: supermini
 supermini:
@@ -65,4 +77,4 @@ msp-launchpad-upload:
 	@ cd firmware && pio run -e msp430 -t upload
 
 .PHONY: clean
-clean: temex-clean cme11a-clean uno-clean bluepill-clean supermini-clean msp-launchpad-clean
+clean: temex-clean cme11a-clean uno-clean bluepill-clean supermini-clean msp-launchpad-clean nucleo-clean
