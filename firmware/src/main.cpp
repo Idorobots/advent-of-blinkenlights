@@ -15,7 +15,7 @@
 #elif defined(ENERGIA_ARCH_MSP430)
 const uint8_t LED_PINS[] = { P1_5, P1_6, P1_7, P3_6, P5_2, P4_5, P3_4, P1_3, P1_4, P5_3, P5_1, P5_0, P5_4, P1_1, P3_5, P3_1 };
 #elif defined(Z80_ARCH_TEMEX)
-  const uint8_t LED_PINS[] = {PB0, PB1, PB2, PB3, PB4, PB5, PB6, PB7, PA0, PA1, PA2, PA3, PA4, PA5, PA6, PA7 };
+  const uint8_t LED_PINS[] = { PA7, PA6, PA5, PA4, PA3, PA2, PA1, PA0, PB7, PB6, PB5, PB4, PB3, PB2, PB1, PB0 };
 #elif defined(HC11_ARCH_CME11)
   const uint8_t LED_PINS[] = {PX7, PX6, PX5, PX4, PX3, PX2, PX1, PX0, PD2, PD3, PD4, PD5, PA4, PA5, PA6, PA7 };
 #endif
