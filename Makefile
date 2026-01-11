@@ -76,5 +76,13 @@ msp-launchpad-clean:
 msp-launchpad-upload:
 	@ cd firmware && pio run -e msp430 -t upload
 
+.PHONY: hw
+hw:
+	@ cd hw && ./gen.py
+
+.PHONY: hw-clean
+hw-clean:
+	@ rm hw/*.bin
+
 .PHONY: clean
-clean: temex-clean cme11a-clean uno-clean bluepill-clean supermini-clean msp-launchpad-clean nucleo-clean
+clean: temex-clean cme11a-clean uno-clean bluepill-clean supermini-clean msp-launchpad-clean nucleo-clean hw-clean

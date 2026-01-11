@@ -6,52 +6,175 @@ Each board expects to sink current for 16 LEDs connected to the pins listed in `
 
 ![](./images/blink.gif)
 
-## Temex CPU card
-![](./images/temex.jpg)
 
-Core: Z80, 8 bit
+## ESP32 C6 super mini
+![](./images/supermini.jpg)
 
-Core voltage: 5V
+Cores: ESP32-C6, High Performance Risc-V and Low Power Risc-V, 32 bit
 
-Clock: 2.4576 MHz
+Core voltage: 3.3V
 
-SRAM: 8k
+Clock: 160 MHz for HP, 20 MHz for LP
 
-EEPROM: 8k
+SRAM: 512K for HP, 16k for LP
 
-GPIO: 16 I/O via Z80 PIO, 16 input only via memory mapped registers.
+FLASH: 320K (internal, expandable externally)
 
-Peripherals: 2 * UART (Z80 SIO), RTC (ICM7170IPG), 4 Timers (Z80 CTC), WDT (MAX691CPE).
+GPIO: 22 (some not available on a convenient header)
 
-Other: SRAM & RTC battery backup (MAX691CPE), second EEPROM slot (max 8k).
+Peripherals: 2.4 GHz Wi-Fi 6 (802.11ax), Bluetooth 5 (LE), IEEE 802.15.4 (Zigbee), 3 * SPI (two for external flash), 3 * UART (one low-power), 2 * I2C (one low-power), I2S, RMT, 2 * TWAI, SDIO, Motor Control PWM, 7-channel 12-bit ADC, USB 2.0, WDT, 7 timers (various functions)
 
-Power draw: 2.5W (9V input)
+Other: Built-in core temperature sensor, built-in AES, RSA and HMAC. JTAG debugger support, LiPo battery charger
 
-More on the card here: https://github.com/Idorobots/temex-reverse
+Power draw: 0.1W (not changing the LiPo battery, WiFi & BT powered down)
 
-Some caveats with this board:
-- Most of the chips on the board had to be replaced due to all kinds of weird failures - the original chips include the CPU, SIO, MAX691CPE and the misc 74XX logic.
-- The CPU reset line (from MAX691CPE) had a massive capacitor on it, causing erractic boot up behaviour. Had to be replaced with a smaller value.
-- Neither EEPROM nor RAM slots utilize the top two JEDEC-pinout address lines, meaning that no more than 8k of memory is addressable in each slot, despite the memory mapping allowing for 16k addresses. The board can be modified to support 32k ROM and 16 RAM (although, all slots need to be populated with 32k chips).
-- RTC/NVRAM battery was not present, not sure what type should be used.
-- RTC clock's oscillator circuit is hooked up to the main 5V line, meaning that when there's no power, it does not oscillate. Very real time, much convenient.
-- RTC chip requires pullups on RD & WR lines during external backup. These were not present on the board preventing the chip from counting time during backup.
+The caveat for this board is the fact that some of the GPIOs available on the headers are used for USB communication, either making it harder to program the board when these pins are used, or having to solder the much less convenient microdot pins.
+
+This board implements the RTC HAL routines with NTP, so it doesn't require setting up the time, but does require a WiFi connection to be set up.
 
 ### Build
-Requires SDCC & related binutils. Tested under the following version:
-
 ```
-SDCC : mcs51/z80/z180/r2k/r2ka/r3ka/sm83/tlcs90/ez80_z80/z80n/r800/ds390/pic16/pic14/TININative/ds400/hc08/s08/stm8/pdk13/pdk14/pdk15/mos6502/mos65c02/f8 4.5.0 #15242 (Linux)
-```
-
-To build the project:
-
-```
-make temex-clean && make temex
-truncate --size=8k firmware/temex.bin
+export WIFI_SSID='\"...\"'
+export WIFI_PASS='\"...\"'
+make supermini-clean && make supermini-upload
 ```
 
-Flash the ROM chip in EEPROM1 position.
+## STM32 Nucleo
+![](./images/nucleo.jpg)
+
+Core: STM32L432KC, ARM Cortex-M4, 32 bit
+
+Core voltage: 1.65V - 3.6V
+
+Clock: 80 MHz
+
+SRAM: 64K
+
+FLASH: 256K
+
+GPIO: 20 I/O (some require jumper setting changes)
+
+Peripherals: 2 * SPI, 2 * I2S, 2 * I2C, 2 * 10-channel 12-bit ADC, DAC, 3 * UART, CAN, USB 2.0, 4 timers, HW RNG, RTC (no power backup)
+
+Other: Built-in STLink/v2-1, JTAG debugger support
+
+Power draw: 0.325W
+
+This chip has an RTC built-in, but it does not expose the `V_BAT` pin, so no backup power-down mode is available.
+
+### Build
+```
+make nucleo-clean && make nucleo-upload
+```
+
+## STM32 Bluepill
+![](./images/bluepill.jpg)
+
+Core: STM32F103C8T6, ARM Cortex-M3, 32 bit
+
+Core voltage: 2V - 3.6V
+
+Clock: 72 MHz
+
+SRAM: 20K
+
+FLASH: 64K
+
+GPIO: 32 I/O (some only 3V3-capable, PA13, PA14 and PA15 with reduced electrical capability)
+
+Peripherals: 2 * SPI, 2 * I2C, 2 * 10-channel 12-bit ADC, 3 * UART, CAN, USB 2.0, 4 timers, RTC
+
+Other: External batery connection for RTC backup, JTAG debugger support
+
+Power draw: 0.15W
+
+### Build
+```
+make bluepill-clean && make bluepill-upload
+```
+
+## MSP430 EXP430FR2355
+![](./images/launchpad.jpg)
+
+Cores: MSP430 FR2355, 16 bit
+
+Core voltage: 1.8V - 3.6V
+
+Clock: 24 MHz, 32 kHz clock, 10 kHz low power oscillator
+
+SRAM: 4k
+
+ROM: 20k
+
+FRAM: 32k program, 512 data
+
+GPIO: 44, various functions
+
+Peripherals: 12-channel 12-bit ADC, 12-bit DAC, 5 16-bit timers, hardware multiplier, 2 * SPI, 2 * UART, 2 * I2C, 16-bit CRC, 16-bit RTC timer, WDT, JTAG
+
+Other: low-power ferroelectric RAM & other power-related optimization features, Built in eZ-FET debugger, low-power tracing capability, on-board ambient light sensor
+
+Power draw: 0.11W
+
+### Build
+
+Initially the project did not build as the vectors section overlapped the text section of the binary - HC11 linker memory map would be picked up by the MSP430 GCC to use instead of the proper MSP one.
+
+The platform uses Platform IO, but requires some additional setup:
+
+- Install `python 2.7` as it is required for upload via `dslite` to work.
+- Alternatively, use the `mspdebug` upload tool with `tilib` (aka. MSP Debug Stack):
+
+```
+cd msp430
+# wget https://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSPDS/3_15_1_001/export/MSPDebugStack_OS_Package_3_15_1_1.zip
+mkdir build
+cd build
+unzip ../MSPDebugStack_OS_Package_3_15_1_1.zip
+cd ..
+patch -p0 < mspdb.patch
+cd build
+make
+cd ../..
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:`pwd`/msp430/build"
+```
+
+- Alternatively, you can obtain the `libmsp430.so` from CCS: https://www.ti.com/tool/CCSTUDIO#downloads
+- `mspdebug` might need to be update outside of PlatformIO as the version bundled with Platform IO does not detect the eZ-FET probe on the board.
+
+```
+make msp-launchpad-clean && make msp-launchpad-upload
+```
+
+## Arduino Uno
+![](./images/uno.jpg)
+
+Core: ATmega328p, AVR, 8bit
+
+Core voltage: 5V (can go as low as 2.7V at slower clock)
+
+Clock: 16 MHz
+
+SRAM: 2k
+
+EEPROM: 1k
+
+FLASH: 32k
+
+GPIO: 23
+
+Peripherals: 2 * SPI, I2C, UART, 8-channel 10-bit ADC, 3 timers (2 8-bit and one 16-bit), WDT
+
+Other: On-board serial programmer/debugger based around another ATmega chip.
+
+Power draw: 0.15W
+
+An external I2C DS3231 RTC is supported for this board.
+
+### Build
+```
+make uno-clean && make uno-upload
+```
 
 ## Axiom CME11A
 ![](./images/cme11a.jpg)
@@ -175,170 +298,77 @@ A modified version of the original Axiom Buffalo 3.4AX ROM is available in `hc11
 The Buffalo Monitor sources come from this repository: https://github.com/tonypdmtr/buffalo
 The code seems to be licensed under the MIT license terms (included in `hc11/LICENSE.buffalo`).
 
-## Arduino Uno
-![](./images/uno.jpg)
+## Temex CPU card
+![](./images/temex.jpg)
 
-Core: ATmega328p, AVR, 8bit
+Core: Z80, 8 bit
 
-Core voltage: 5V (can go as low as 2.7V at slower clock)
+Core voltage: 5V
 
-Clock: 16 MHz
+Clock: 2.4576 MHz
 
-SRAM: 2k
+SRAM: 8k
 
-EEPROM: 1k
+EEPROM: 8k
 
-FLASH: 32k
+GPIO: 16 I/O via Z80 PIO, 16 input only via memory mapped registers.
 
-GPIO: 23
+Peripherals: 2 * UART (Z80 SIO), RTC (ICM7170IPG), 4 Timers (Z80 CTC), WDT (MAX691CPE).
 
-Peripherals: 2 * SPI, I2C, UART, 8-channel 10-bit ADC, 3 timers (2 8-bit and one 16-bit), WDT
+Other: SRAM & RTC battery backup (MAX691CPE), second EEPROM slot (max 8k).
 
-Other: On-board serial programmer/debugger based around another ATmega chip.
+Power draw: 2.5W (9V input)
 
-Power draw: 0.15W
+More on the card here: https://github.com/Idorobots/temex-reverse
 
-An external I2C DS3231 RTC is supported for this board.
+Some caveats with this board:
+- Most of the chips on the board had to be replaced due to all kinds of weird failures - the original chips include the CPU, SIO, MAX691CPE and the misc 74XX logic.
+- The CPU reset line (from MAX691CPE) had a massive capacitor on it, causing erractic boot up behaviour. Had to be replaced with a smaller value.
+- Neither EEPROM nor RAM slots utilize the top two JEDEC-pinout address lines, meaning that no more than 8k of memory is addressable in each slot, despite the memory mapping allowing for 16k addresses. The board can be modified to support 32k ROM and 16 RAM (although, all slots need to be populated with 32k chips).
+- RTC/NVRAM battery was not present, not sure what type should be used.
+- RTC clock's oscillator circuit is hooked up to the main 5V line, meaning that when there's no power, it does not oscillate. Very real time, much convenient.
+- RTC chip requires pullups on RD & WR lines during external backup. These were not present on the board preventing the chip from counting time during backup.
+
+### Build
+Requires SDCC & related binutils. Tested under the following version:
+
+```
+SDCC : mcs51/z80/z180/r2k/r2ka/r3ka/sm83/tlcs90/ez80_z80/z80n/r800/ds390/pic16/pic14/TININative/ds400/hc08/s08/stm8/pdk13/pdk14/pdk15/mos6502/mos65c02/f8 4.5.0 #15242 (Linux)
+```
+
+To build the project:
+
+```
+make temex-clean && make temex
+truncate --size=8k firmware/temex.bin
+```
+
+Flash the ROM chip in EEPROM1 position.
+
+## Discrete logic
+![](./images/hw.jpg)
+
+Core: None - discrete 74XX series logic, CMOS
+
+Core voltage: 2V - 6V
+
+Clock: 4.194304 MHz
+
+SRAM: None
+
+EPROM: 32k
+
+GPIO: None
+
+Peripherals: None (3 8-bit counters, I guess :shrug:)
+
+Other: ---
+
+Power draw: 0.02W at 3V
+
+This version uses 2 EPROM chips to store the animation data and a 4040-counter-based address generator to index those memories. Clock crystal was selected so that the animation timing matches the other boards.
 
 ### Build
 ```
-make uno-clean && make uno-upload
-```
-
-## MSP430 EXP430FR2355
-![](./images/launchpad.jpg)
-
-Cores: MSP430 FR2355, 16 bit
-
-Core voltage: 1.8V - 3.6V
-
-Clock: 24 MHz, 32 kHz clock, 10 kHz low power oscillator
-
-SRAM: 4k
-
-ROM: 20k
-
-FRAM: 32k program, 512 data
-
-GPIO: 44, various functions
-
-Peripherals: 12-channel 12-bit ADC, 12-bit DAC, 5 16-bit timers, hardware multiplier, 2 * SPI, 2 * UART, 2 * I2C, 16-bit CRC, 16-bit RTC timer, WDT, JTAG
-
-Other: low-power ferroelectric RAM & other power-related optimization features, Built in eZ-FET debugger, low-power tracing capability, on-board ambient light sensor
-
-Power draw: 0.11W
-
-### Build
-
-Initially the project did not build as the vectors section overlapped the text section of the binary - HC11 linker memory map would be picked up by the MSP430 GCC to use instead of the proper MSP one.
-
-The platform uses Platform IO, but requires some additional setup:
-
-- Install `python 2.7` as it is required for upload via `dslite` to work.
-- Alternatively, use the `mspdebug` upload tool with `tilib` (aka. MSP Debug Stack):
-
-```
-cd msp430
-# wget https://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSPDS/3_15_1_001/export/MSPDebugStack_OS_Package_3_15_1_1.zip
-mkdir build
-cd build
-unzip ../MSPDebugStack_OS_Package_3_15_1_1.zip
-cd ..
-patch -p0 < mspdb.patch
-cd build
-make
-cd ../..
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:`pwd`/msp430/build"
-```
-
-- Alternatively, you can obtain the `libmsp430.so` from CCS: https://www.ti.com/tool/CCSTUDIO#downloads
-- `mspdebug` might need to be update outside of PlatformIO as the version bundled with Platform IO does not detect the eZ-FET probe on the board.
-
-```
-make msp-launchpad-clean && make msp-launchpad-upload
-```
-
-## STM32 Bluepill
-![](./images/bluepill.jpg)
-
-Core: STM32F103C8T6, ARM Cortex-M3, 32 bit
-
-Core voltage: 2V - 3.6V
-
-Clock: 72 MHz
-
-SRAM: 20K
-
-FLASH: 64K
-
-GPIO: 32 I/O (some only 3V3-capable, PA13, PA14 and PA15 with reduced electrical capability)
-
-Peripherals: 2 * SPI, 2 * I2C, 2 * 10-channel 12-bit ADC, 3 * UART, CAN, USB 2.0, 4 timers, RTC
-
-Other: External batery connection for RTC backup, JTAG debugger support
-
-Power draw: 0.15W
-
-### Build
-```
-make bluepill-clean && make bluepill-upload
-```
-## STM32 Nucleo
-![](./images/nucleo.jpg)
-
-Core: STM32L432KC, ARM Cortex-M4, 32 bit
-
-Core voltage: 1.65V - 3.6V
-
-Clock: 80 MHz
-
-SRAM: 64K
-
-FLASH: 256K
-
-GPIO: 20 I/O (some require jumper setting changes)
-
-Peripherals: 2 * SPI, 2 * I2S, 2 * I2C, 2 * 10-channel 12-bit ADC, DAC, 3 * UART, CAN, USB 2.0, 4 timers, HW RNG, RTC (no power backup)
-
-Other: Built-in STLink/v2-1, JTAG debugger support
-
-Power draw: 0.325W
-
-This chip has an RTC built-in, but it does not expose the `V_BAT` pin, so no backup power-down mode is available.
-
-### Build
-```
-make nucleo-clean && make nucleo-upload
-```
-
-## ESP32 C6 super mini
-![](./images/supermini.jpg)
-
-Cores: ESP32-C6, High Performance Risc-V and Low Power Risc-V, 32 bit
-
-Core voltage: 3.3V
-
-Clock: 160 MHz for HP, 20 MHz for LP
-
-SRAM: 512K for HP, 16k for LP
-
-FLASH: 320K (internal, expandable externally)
-
-GPIO: 22 (some not available on a convenient header)
-
-Peripherals: 2.4 GHz Wi-Fi 6 (802.11ax), Bluetooth 5 (LE), IEEE 802.15.4 (Zigbee), 3 * SPI (two for external flash), 3 * UART (one low-power), 2 * I2C (one low-power), I2S, RMT, 2 * TWAI, SDIO, Motor Control PWM, 7-channel 12-bit ADC, USB 2.0, WDT, 7 timers (various functions)
-
-Other: Built-in core temperature sensor, built-in AES, RSA and HMAC. JTAG debugger support, LiPo battery charger
-
-Power draw: 0.1W (not changing the LiPo battery, WiFi & BT powered down)
-
-The caveat for this board is the fact that some of the GPIOs available on the headers are used for USB communication, either making it harder to program the board when these pins are used, or having to solder the much less convenient microdot pins.
-
-This board implements the RTC HAL routines with NTP, so it doesn't require setting up the time, but does require a WiFi connection to be set up.
-
-### Build
-```
-export WIFI_SSID='\"...\"'
-export WIFI_PASS='\"...\"'
-make supermini-clean && make supermini-upload
+make hw-clean && make hw
 ```
